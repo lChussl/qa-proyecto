@@ -22,31 +22,19 @@ use App\Http\Requests\StoreFileRequest;
 use App\Http\Requests\StudentStoreRequest;
 use App\Http\Requests\TeacherAssignRequest;
 use App\Http\Requests\TeacherStoreRequest;
-use Illuminate\Auth\Notifications\VerifyEmail;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use App\Models\User;
-use Illuminate\Foundation\Testing\WithoutMiddleware;
-use Illuminate\Http\Client\Response;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
-class RegisterLoginTest extends TestCase
+class TestCases extends TestCase
 {
     public function setUp(): void
     {
         parent::setUp();
-
-        //Role::create(['name' => 'admin']);
-        //Role::create(['name' => 'teacher']);
-        //Role::create(['name' => 'student']);
     }
 
     /**

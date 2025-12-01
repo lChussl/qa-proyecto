@@ -22,7 +22,8 @@ class SectionFactory extends Factory
     public function definition()
     {
         return [
-            //
+            'section_name' => 'Section ' . $this->faker->randomLetter,
+            'room_no' => $this->faker->randomNumber(3),
         ];
     }
 }

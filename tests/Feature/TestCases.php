@@ -42,7 +42,8 @@ class TestCases extends TestCase
      *
      * @return void
      */
-    public function test_unauthenticated_user_can_view_a_login_form(){
+    public function test_unauthenticated_user_can_view_a_login_form()
+    {
         $response = $this->get('/login');
         $response->assertSuccessful();
         $response->assertViewIs('auth.login');
@@ -53,9 +54,10 @@ class TestCases extends TestCase
      *
      * @return void
      */
-    public function test_authenticated_user_cannot_view_a_login_form(){
+    public function test_authenticated_user_cannot_view_a_login_form()
+    {
         $user = User::factory()->create([
-            'role'     => 'admin',
+            'role' => 'admin',
             'password' => bcrypt('secret'),
         ]);
 
@@ -74,12 +76,12 @@ class TestCases extends TestCase
     {
         $this->withoutMiddleware(VerifyCsrfToken::class);
         $user = User::factory()->create([
-            'role'     => 'admin',
+            'role' => 'admin',
             'password' => bcrypt('secret'),
         ]);
 
         $response = $this->from('/login')->post('/login', [
-            'email'    => $user->email,
+            'email' => $user->email,
             'password' => 'secret',
         ]);
 
@@ -97,7 +99,7 @@ class TestCases extends TestCase
         $this->withoutMiddleware(VerifyCsrfToken::class);
 
         $admin = User::factory()->create([
-            'role'    => 'admin',
+            'role' => 'admin',
         ]);
 
         $this->actingAs($admin);
@@ -267,16 +269,16 @@ class TestCases extends TestCase
         $this->actingAs($user);
 
         $response = $this->post('/test-request', [
-            'first_name'    => 'Juan',
-            'last_name'     => 'Pérez',
-            'email'         => 'juan.perez@example.com',
-            'gender'        => 'M',
-            'nationality'   => 'AR',
-            'phone'         => '123456789',
-            'address'       => 'Calle Falsa 123',
-            'city'          => 'Buenos Aires',
-            'zip'           => '1000',
-            'password'      => 'password123',
+            'first_name' => 'Juan',
+            'last_name' => 'Pérez',
+            'email' => 'juan.perez@example.com',
+            'gender' => 'M',
+            'nationality' => 'AR',
+            'phone' => '123456789',
+            'address' => 'Calle Falsa 123',
+            'city' => 'Buenos Aires',
+            'zip' => '1000',
+            'password' => 'password123',
         ]);
 
         $response->assertForbidden();
@@ -300,30 +302,30 @@ class TestCases extends TestCase
         $this->actingAs($user);
 
         $response = $this->post('/test-request', [
-            'first_name'        => 'John',
-            'last_name'         => 'Doe',
-            'email'             => 'john@doe.com',
-            'gender'            => 'M',
-            'nationality'       => 'CR',
-            'phone'             => '123456789',
-            'address'           => 'StreetTest',
-            'city'              => 'Alajuela',
-            'zip'               => '1000',
-            'birthday'          => '2000-05-10',
-            'religion'          => 'Católica',
-            'blood_type'        => 'O+',
-            'password'          => 'password123',
+            'first_name' => 'John',
+            'last_name' => 'Doe',
+            'email' => 'john@doe.com',
+            'gender' => 'M',
+            'nationality' => 'CR',
+            'phone' => '123456789',
+            'address' => 'StreetTest',
+            'city' => 'Alajuela',
+            'zip' => '1000',
+            'birthday' => '2000-05-10',
+            'religion' => 'Católica',
+            'blood_type' => 'O+',
+            'password' => 'password123',
 
-            'father_name'       => 'John Doe',
-            'father_phone'      => '123123123',
-            'mother_name'       => 'Jane Doe',
-            'mother_phone'      => '321321321',
-            'parent_address'    => 'test address',
+            'father_name' => 'John Doe',
+            'father_phone' => '123123123',
+            'mother_name' => 'Jane Doe',
+            'mother_phone' => '321321321',
+            'parent_address' => 'test address',
 
-            'class_id'          => 1,
-            'section_id'        => 1,
-            'session_id'        => 1,
-            'id_card_number'    => 'ABC12345',
+            'class_id' => 1,
+            'section_id' => 1,
+            'session_id' => 1,
+            'id_card_number' => 'ABC12345',
         ]);
 
         $response->assertForbidden();
@@ -371,12 +373,12 @@ class TestCases extends TestCase
         $this->actingAs($user);
 
         $response = $this->post('/test-request', [
-            'course_id'     => 1,
-            'semester_id'   => 1,
-            'class_id'      => 1,
-            'section_id'    => 1,
-            'teacher_id'    => 1,
-            'session_id'    => 1,
+            'course_id' => 1,
+            'semester_id' => 1,
+            'class_id' => 1,
+            'section_id' => 1,
+            'teacher_id' => 1,
+            'session_id' => 1,
         ]);
 
         $response->assertForbidden();
@@ -400,12 +402,12 @@ class TestCases extends TestCase
         $this->actingAs($user);
 
         $response = $this->post('/test-request', [
-            'course_id'     => 1,
-            'class_id'      => 1,
-            'section_id'    => 1,
-            'student_ids'   => [1, 2, 3],
-            'status'        => ['present', 'absent', 'present'],
-            'session_id'    => 1,
+            'course_id' => 1,
+            'class_id' => 1,
+            'section_id' => 1,
+            'student_ids' => [1, 2, 3],
+            'status' => ['present', 'absent', 'present'],
+            'session_id' => 1,
         ]);
 
         $response->assertForbidden();
@@ -431,9 +433,9 @@ class TestCases extends TestCase
         $response = $this->post('/test-request', [
             'course_name' => 'Matemáticas',
             'course_type' => 'Obligatoria',
-            'class_id'    => 1,
+            'class_id' => 1,
             'semester_id' => 1,
-            'session_id'  => 1,
+            'session_id' => 1,
         ]);
 
         $response->assertForbidden();
@@ -457,13 +459,13 @@ class TestCases extends TestCase
         $this->actingAs($user);
 
         $response = $this->post('/test-request', [
-            'exam_name'   => 'Examen Trimestral',
-            'start_date'  => '2025-03-01',
-            'end_date'    => '2025-03-05',
+            'exam_name' => 'Examen Trimestral',
+            'start_date' => '2025-03-01',
+            'end_date' => '2025-03-05',
             'semester_id' => 1,
-            'class_id'    => 1,
-            'course_id'   => 1,
-            'session_id'  => 1,
+            'class_id' => 1,
+            'course_id' => 1,
+            'session_id' => 1,
         ]);
 
         $response->assertForbidden();
@@ -487,11 +489,11 @@ class TestCases extends TestCase
         $this->actingAs($user);
 
         $response = $this->post('/test-request', [
-            'total_marks'              => 100,
-            'pass_marks'               => 40,
-            'marks_distribution_note'  => '40% teoría / 60% práctica',
-            'exam_id'                  => 1,
-            'session_id'               => 1,
+            'total_marks' => 100,
+            'pass_marks' => 40,
+            'marks_distribution_note' => '40% teoría / 60% práctica',
+            'exam_id' => 1,
+            'session_id' => 1,
         ]);
 
         $response->assertForbidden();
@@ -515,12 +517,12 @@ class TestCases extends TestCase
         $this->actingAs($user);
 
         $response = $this->post('/test-request', [
-            'point'             => 4.0,
-            'grade'             => 'A',
-            'start_at'          => 90,
-            'end_at'            => 100,
+            'point' => 4.0,
+            'grade' => 'A',
+            'start_at' => 90,
+            'end_at' => 100,
             'grading_system_id' => 1,
-            'session_id'        => 1,
+            'session_id' => 1,
         ]);
 
         $response->assertForbidden();
@@ -545,9 +547,9 @@ class TestCases extends TestCase
 
         $response = $this->post('/test-request', [
             'system_name' => 'Sistema de Notas Secundaria',
-            'class_id'    => 1,
+            'class_id' => 1,
             'semester_id' => 1,
-            'session_id'  => 1,
+            'session_id' => 1,
         ]);
 
         $response->assertForbidden();
@@ -571,7 +573,7 @@ class TestCases extends TestCase
         $this->actingAs($user);
 
         $response = $this->post('/test-request', [
-            'notice'     => 'Reunión de padres el lunes a las 9 AM.',
+            'notice' => 'Reunión de padres el lunes a las 9 AM.',
             'session_id' => 1,
         ]);
 
@@ -620,12 +622,12 @@ class TestCases extends TestCase
         $this->actingAs($user);
 
         $response = $this->post('/test-request', [
-            'start'      => '08:00',
-            'end'        => '09:00',
-            'weekday'    => 1,
-            'class_id'   => 1,
+            'start' => '08:00',
+            'end' => '09:00',
+            'weekday' => 1,
+            'class_id' => 1,
             'section_id' => 1,
-            'course_id'  => 1,
+            'course_id' => 1,
             'session_id' => 1,
         ]);
 

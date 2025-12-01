@@ -22,7 +22,7 @@ class SchoolSessionFactory extends Factory
     public function definition()
     {
         return [
-            //
+            'session_name' => $this->faker->year . '-' . ($this->faker->year + 1)
         ];
     }
 }

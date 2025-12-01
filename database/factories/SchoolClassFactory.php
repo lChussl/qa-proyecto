@@ -22,7 +22,7 @@ class SchoolClassFactory extends Factory
     public function definition()
     {
         return [
-            //
+            'class_name' => 'Class ' . $this->faker->unique()->randomDigit,
         ];
     }
 }

@@ -22,7 +22,10 @@ class SemesterFactory extends Factory
     public function definition()
     {
         return [
-            //
+            'semester_name' => $this->faker->word,
+            'start_date' => now(),
+            'end_date' => now()->addMonths(6),
+            'session_id' => 1
         ];
     }
 }

@@ -22,7 +22,13 @@ class ExamFactory extends Factory
     public function definition()
     {
         return [
-            //
+            'exam_name' => $this->faker->word,
+            'start_date' => now(),
+            'end_date' => now()->addHours(2),
+            'session_id' => 1,
+            'semester_id' => 1,
+            'class_id' => 1,
+            'course_id' => 1
         ];
     }
 }

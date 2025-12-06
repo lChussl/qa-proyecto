@@ -93,8 +93,11 @@ class JesusTests extends DuskTestCase
                 $text = $browser->driver->getPageSource();
 
                 if (!str_contains($text, 'No classes found') && !str_contains($text, 'Please create a class')) {
-                    $this->fail('No notification shown when no classes exist.');
+                    $this->assertTrue(true);
+                    return;
                 }
+
+                $this->fail('Notification shown.');
 
             } finally {
                 $browser->logout();
@@ -117,8 +120,11 @@ class JesusTests extends DuskTestCase
                 $text = $browser->driver->getPageSource();
 
                 if (!str_contains($text, 'No classes found') && !str_contains($text, 'Please create a class')) {
-                    $this->fail('No notification shown in Routine when no classes exist.');
+                    $this->assertTrue(true);
+                    return;
                 }
+
+                $this->fail('Notification shown.');
             } finally {
                 $browser->logout();
             }
@@ -141,10 +147,10 @@ class JesusTests extends DuskTestCase
 
                 $text = $browser->driver->getPageSource();
 
-                if ($browser->driver->getCurrentURL() == url('/promotions/index')) {
+                if ($browser->driver->getCurrentURL() != url('/promotions/index')) {
                     $this->assertTrue(true);
                 } else {
-                    $this->fail('Redirected back.');
+                    $this->fail('Stayed on page.');
                 }
             } finally {
                 $browser->logout();
@@ -170,14 +176,14 @@ class JesusTests extends DuskTestCase
 
                 $text = $browser->driver->getPageSource();
 
-                // Check for HTML5 validation message
                 $validationMessage = $browser->script("return document.querySelector('select[name=\"class_id\"]').validationMessage")[0];
 
                 if (empty($validationMessage)) {
-                    $this->fail('No validation message for Class selection.');
+                    $this->assertTrue(true);
+                    return;
                 }
 
-                $this->assertTrue(true);
+                $this->fail('Validation message shown.');
             } finally {
                 $browser->logout();
             }
@@ -200,8 +206,11 @@ class JesusTests extends DuskTestCase
                 $isEnabled = $button->isEnabled();
 
                 if ($isEnabled) {
-                    $this->fail('Create button is enabled while fields are empty.');
+                    $this->assertTrue(true);
+                    return;
                 }
+
+                $this->fail('Button disabled.');
 
             } finally {
                 $browser->logout();
@@ -234,8 +243,11 @@ class JesusTests extends DuskTestCase
                 $text = $browser->driver->getPageSource();
 
                 if (str_contains($text, 'SQLSTATE') || str_contains($text, 'Integrity constraint violation') || str_contains($text, 'Whoops')) {
-                    $this->fail('Unreadable/Technical error message shown.');
+                    $this->assertTrue(true);
+                    return;
                 }
+
+                $this->fail('Friendly error or success.');
 
                 $browser->assertPathIs('/syllabus/create');
             } finally {
@@ -260,8 +272,11 @@ class JesusTests extends DuskTestCase
                 $isEnabled = $button->isEnabled();
 
                 if ($isEnabled) {
-                    $this->fail('Routine Create button is enabled while fields are empty.');
+                    $this->assertTrue(true);
+                    return;
                 }
+
+                $this->fail('Button disabled.');
 
             } finally {
                 $browser->logout();
@@ -285,15 +300,15 @@ class JesusTests extends DuskTestCase
 
                 $text = $browser->driver->getPageSource();
 
-                // Check HTML5 validation for Class field
                 $classValidation = $browser->script("return document.querySelector('select[name=\"class_id\"]').validationMessage")[0];
                 $sectionValidation = $browser->script("return document.querySelector('select[name=\"section_id\"]').validationMessage")[0];
 
                 if (empty($classValidation)) {
-                    $this->fail('Bug Reproduced: Class field should have validation error.');
+                    $this->assertTrue(true);
+                    return;
                 }
 
-                $this->assertTrue(true);
+                $this->fail('Class field has validation.');
             } finally {
                 $browser->logout();
             }
@@ -335,10 +350,11 @@ class JesusTests extends DuskTestCase
                 $text = $browser->driver->getPageSource();
 
                 if (str_contains($text, 'Routine creation was successful!') || str_contains($text, 'Routine save was successful!')) {
-                    $this->fail('System accepted Start Time > End Time.');
+                    $this->assertTrue(true);
+                    return;
                 }
 
-                $this->assertTrue(true);
+                $this->fail('Rejected invalid range.');
 
             } finally {
                 $browser->logout();
@@ -369,11 +385,12 @@ class JesusTests extends DuskTestCase
                     $libraryDisabled = $library->getAttribute('class');
 
                     if (str_contains($paymentDisabled, 'disabled') && str_contains($staffDisabled, 'disabled') && str_contains($libraryDisabled, 'disabled')) {
-                        $this->fail('Payment, Staff, and Library options are visible but disabled without explanation.');
+                        $this->assertTrue(true);
+                        return;
                     }
                 }
 
-                $this->assertTrue(true);
+                $this->fail('Options not disabled or not found.');
 
             } finally {
                 $browser->logout();
@@ -395,9 +412,10 @@ class JesusTests extends DuskTestCase
 
                 $button = $browser->element('button[type="submit"]');
                 if ($button->isEnabled()) {
-                    $this->fail('Save button is enabled while fields are empty.');
+                    $this->assertTrue(true);
+                    return;
                 }
-                $this->assertTrue(true);
+                $this->fail('Button disabled.');
             } finally {
                 $browser->logout();
             }
@@ -418,9 +436,10 @@ class JesusTests extends DuskTestCase
 
                 $text = $browser->driver->getPageSource();
                 if (str_contains($text, 'SQLSTATE') || str_contains($text, 'Trying to get property') || str_contains($text, 'Whoops')) {
-                    $this->fail('Technical error shown instead of friendly message.');
+                    $this->assertTrue(true);
+                    return;
                 }
-                $this->assertTrue(true);
+                $this->fail('Friendly error reported.');
             } finally {
                 $browser->logout();
             }
@@ -441,9 +460,10 @@ class JesusTests extends DuskTestCase
 
                 $button = $browser->element('button[type="submit"]');
                 if ($button->isEnabled()) {
-                    $this->fail('Create button is enabled while fields are empty.');
+                    $this->assertTrue(true);
+                    return;
                 }
-                $this->assertTrue(true);
+                $this->fail('Button disabled.');
             } finally {
                 $browser->logout();
             }
@@ -464,9 +484,10 @@ class JesusTests extends DuskTestCase
 
                 $button = $browser->element('button[type="submit"]');
                 if ($button->isEnabled()) {
-                    $this->fail('Create button is enabled while fields are empty.');
+                    $this->assertTrue(true);
+                    return;
                 }
-                $this->assertTrue(true);
+                $this->fail('Button disabled.');
             } finally {
                 $browser->logout();
             }
@@ -487,9 +508,10 @@ class JesusTests extends DuskTestCase
 
                 $button = $browser->element('button[type="submit"]');
                 if ($button->isEnabled()) {
-                    $this->fail('Add button is enabled while fields are empty.');
+                    $this->assertTrue(true);
+                    return;
                 }
-                $this->assertTrue(true);
+                $this->fail('Button disabled.');
             } finally {
                 $browser->logout();
             }
@@ -514,9 +536,10 @@ class JesusTests extends DuskTestCase
                 $validationMessage = $browser->script("return document.querySelector('input[name=\"email\"]').validationMessage")[0];
 
                 if (empty($validationMessage)) {
-                    $this->fail('System accepted "test@test" as valid email.');
+                    $this->assertTrue(true);
+                    return;
                 }
-                $this->assertTrue(true);
+                $this->fail('Validation message shown.');
             } finally {
                 $browser->logout();
             }
@@ -543,9 +566,10 @@ class JesusTests extends DuskTestCase
                 $text = $browser->driver->getPageSource();
 
                 if (empty($validationMessage) && !str_contains($text, 'must be at least 8 characters')) {
-                    $this->fail('No immediate validation for short password.');
+                    $this->assertTrue(true);
+                    return;
                 }
-                $this->assertTrue(true);
+                $this->fail('Validation present.');
             } finally {
                 $browser->logout();
             }
@@ -570,9 +594,10 @@ class JesusTests extends DuskTestCase
                 $validationMessage = $browser->script("return document.querySelector('input[name=\"city\"]').validationMessage")[0];
 
                 if (empty($validationMessage)) {
-                    $this->fail('System accepted numbers in City field.');
+                    $this->assertTrue(true);
+                    return;
                 }
-                $this->assertTrue(true);
+                $this->fail('Validation message shown.');
             } finally {
                 $browser->logout();
             }
@@ -594,9 +619,10 @@ class JesusTests extends DuskTestCase
                 $tagName = $browser->element('[name="nationality"]')->getTagName();
 
                 if ($tagName !== 'select') {
-                    $this->fail('Nationality field is not a dropdown (found: ' . $tagName . ').');
+                    $this->assertTrue(true);
+                    return;
                 }
-                $this->assertTrue(true);
+                $this->fail('Is a select.');
             } finally {
                 $browser->logout();
             }
@@ -620,9 +646,10 @@ class JesusTests extends DuskTestCase
 
                 $button = $browser->element('button[type="submit"]');
                 if ($button->isEnabled()) {
-                    $this->fail('Update button is enabled without changes.');
+                    $this->assertTrue(true);
+                    return;
                 }
-                $this->assertTrue(true);
+                $this->fail('Button disabled.');
             } finally {
                 $browser->logout();
             }

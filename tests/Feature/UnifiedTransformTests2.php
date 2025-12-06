@@ -289,7 +289,7 @@ class TestEstudianteCreacion extends TestCase
     */
 
 
-    public function test_falla_si_usuario_no_tiene_permiso_create_users()
+    public function test_falla_si_usuario_no_tiene_permiso_create_users2()
     {
         $user = User::factory()->create();
 

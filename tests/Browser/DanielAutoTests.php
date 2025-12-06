@@ -578,7 +578,7 @@ class DanielAutoTests extends DuskTestCase
             ->type('mother_name', 'Adriana') 
             ->type('mother_phone', '85204279') 
             ->type('parent_address', 'Vuelta de Jorco')
-            ->select('section_id', 'Class 1') 
+            ->select('class_id', 'Class 1') 
             //Dejamos ausente el select de section
             ->type('board_reg_no', '1');
 

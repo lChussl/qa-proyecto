@@ -650,6 +650,7 @@ class AlissonTest extends DuskTestCase
                     ->select('class_id')
                     ->pause(2000)
                     ->waitUntilEnabled('select[name="course_id"]')
+                    ->pause(2000)
                     ->select('course_id')
                     ->type('exam_name', 'Past Exam')
                     // Start Date: 2020-01-01
@@ -959,6 +960,7 @@ class AlissonTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             try {
                 $browser->loginAs($this->user)
+                    ->maximize()
                     ->visit('/routine/create')
                     ->pause(1000)
                     ->select('class_id', $this->class->id)
@@ -980,7 +982,7 @@ class AlissonTest extends DuskTestCase
 
                 $browser->assertPathIs('/routine/create');
             } finally {
-                $browser->logout();
+                //$browser->logout();
             }
         });
     }
@@ -1171,6 +1173,7 @@ class AlissonTest extends DuskTestCase
             try {
                 $browser->loginAs($this->user)
                     ->visit('/academics/settings')
+                    ->maximize()
                     ->pause(1000);
 
                 $browser->within('form[action$="school/class/create"]', function ($form) {

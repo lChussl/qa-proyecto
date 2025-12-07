@@ -14,7 +14,7 @@ use Tests\DuskTestCase;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 
-class JesusTests extends DuskTestCase
+class JesusTest extends DuskTestCase
 {
     protected $user;
 

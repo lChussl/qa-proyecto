@@ -53,17 +53,24 @@ class ExamTest extends DuskTestCase
         $this->roleWithPermissions = $role;
         $user->assignRole($role);
         $this->user = $user;
+    }
 
-        // Create necessary data for the tests
+    /**
+     * Helper method to create school data.
+     */
+    protected function seedSchoolData(): void
+    {
         $this->session = SchoolSession::factory()->create();
         $this->class = SchoolClass::factory()->create(['session_id' => $this->session->id]);
         $this->section = Section::factory()->create(['class_id' => $this->class->id, 'session_id' => $this->session->id]);
         $this->semester = Semester::factory()->create(['session_id' => $this->session->id]);
+
         $this->course = Course::factory()->create([
             'class_id' => $this->class->id,
             'session_id' => $this->session->id,
             'semester_id' => $this->semester->id
         ]);
+
         Exam::factory()->create([
             'session_id' => $this->session->id,
             'class_id' => $this->class->id,
@@ -112,18 +119,29 @@ class ExamTest extends DuskTestCase
      */
     public function testExamCreationPastDate()
     {
-        $this->browse(function (Browser $browser) {
+        // Create required data
+        $session = SchoolSession::factory()->create();
+        $class = SchoolClass::factory()->create(['session_id' => $session->id]);
+        $section = Section::factory()->create(['class_id' => $class->id, 'session_id' => $session->id]);
+        $semester = Semester::factory()->create(['session_id' => $session->id]);
+        $course = Course::factory()->create([
+            'class_id' => $class->id,
+            'session_id' => $session->id,
+            'semester_id' => $semester->id
+        ]);
+
+        $this->browse(function (Browser $browser) use ($class, $section, $course, $semester) {
             try {
                 $this->loginAsAdmin($browser)
                     ->visit('/exams/create')
                     ->assertSee('Create Exam')
-                    ->select('semester_id')
+                    ->select('semester_id', $semester->id)
                     ->pause(1000)
-                    ->select('class_id')
+                    ->select('class_id', $class->id)
                     ->pause(2000)
                     ->waitUntilEnabled('select[name="course_id"]')
                     ->pause(2000)
-                    ->select('course_id')
+                    ->select('course_id', $course->id)
                     ->type('exam_name', 'Past Exam')
                     // Start Date: 2020-01-01
                     ->script([
@@ -156,6 +174,7 @@ class ExamTest extends DuskTestCase
      */
     public function testExamRuleValidation()
     {
+        $this->seedSchoolData();
         $this->browse(function (Browser $browser) {
             try {
                 $exam = Exam::first();
@@ -190,6 +209,7 @@ class ExamTest extends DuskTestCase
      */
     public function testAdminExamCreationRestriction()
     {
+        $this->seedSchoolData();
         $teacher = User::factory()->create(['role' => 'teacher']);
 
         // Teacher creates an exam

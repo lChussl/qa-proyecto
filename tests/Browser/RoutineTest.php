@@ -3,6 +3,7 @@
 namespace Tests\Browser;
 
 use App\Models\Course;
+use App\Models\Exam;
 use App\Models\SchoolClass;
 use App\Models\SchoolSession;
 use App\Models\Section;
@@ -54,16 +55,31 @@ class RoutineTest extends DuskTestCase
         $this->roleWithPermissions = $role;
         $user->assignRole($role);
         $this->user = $user;
+    }
 
-        // Create necessary data for the tests
+    /**
+     * Helper method to create school data.
+     */
+    protected function seedSchoolData(): void
+    {
         $this->session = SchoolSession::factory()->create();
         $this->class = SchoolClass::factory()->create(['session_id' => $this->session->id]);
         $this->section = Section::factory()->create(['class_id' => $this->class->id, 'session_id' => $this->session->id]);
         $this->semester = Semester::factory()->create(['session_id' => $this->session->id]);
+
         $this->course = Course::factory()->create([
             'class_id' => $this->class->id,
             'session_id' => $this->session->id,
             'semester_id' => $this->semester->id
+        ]);
+
+        Exam::factory()->create([
+            'session_id' => $this->session->id,
+            'class_id' => $this->class->id,
+            'course_id' => $this->course->id,
+            'semester_id' => $this->semester->id,
+            'start_date' => now(),
+            'end_date' => now()->addDays(1)
         ]);
     }
 
@@ -73,6 +89,7 @@ class RoutineTest extends DuskTestCase
      */
     public function testRoutineTimeValidation()
     {
+        $this->seedSchoolData();
         $this->browse(function (Browser $browser) {
             try {
                 $browser->loginAs($this->user)

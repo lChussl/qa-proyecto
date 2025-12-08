@@ -997,6 +997,14 @@ class DanielUnitTest extends TestCase
         $teacherIntruder = User::factory()->create(['email' => 'intruder@example.com']);
         $teacherIntruder->assignRole('teacher');
 
+        $this->semester = \App\Models\Semester::create([
+            'semester_name' => 'Semestre Test',
+            'start_date' => '2025-01-01',
+            'end_date' => '2025-06-01',
+            'session_id' => $this->session->id,
+        ]);
+
+
         // Asignar curso al teacherOwner
         \App\Models\AssignedTeacher::create([
             'teacher_id' => $teacherOwner->id,
@@ -1004,6 +1012,7 @@ class DanielUnitTest extends TestCase
             'class_id' => $this->class->id,
             'section_id' => $this->section->id,
             'session_id' => $this->session->id,
+            'semester_id' => $this->semester->id,
         ]);
 
         // Crear estudiante + nota
@@ -1018,6 +1027,17 @@ class DanielUnitTest extends TestCase
             'board_reg_no' => 'BRX-55'
         ]);
 
+        $exam = \App\Models\Exam::create([
+            'exam_name'   => 'Examen Parcial',
+            'start_date'  => '2025-01-10 00:00:00',
+            'end_date'    => '2025-01-15 00:00:00',
+            'class_id'    => $this->class->id,
+            'course_id'   => $this->course->id,
+            'semester_id' => $this->semester->id,
+            'session_id'  => $this->session->id,
+        ]);
+
+
         // Nota registrada previamente
         $nota = \App\Models\Mark::create([
             'student_id' => $student->id,
@@ -1025,12 +1045,13 @@ class DanielUnitTest extends TestCase
             'class_id' => $this->class->id,
             'section_id' => $this->section->id,
             'session_id' => $this->session->id,
-            'mark_obtained' => 75
+            'exam_id' => $exam->id,
+            'marks' => 75
         ]);
 
         // Payload de edición
         $payload = [
-            'mark_obtained' => 95
+            'marks' => 95
         ];
 
         //  Acceso  PROFESOR intruso intenta editar

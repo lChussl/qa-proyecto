@@ -30,7 +30,7 @@ use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
-class TestCasesTest extends TestCase
+class JesusUnitTest extends TestCase
 {
     public function setUp(): void
     {

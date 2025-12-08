@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Feature\DanielUnitTest;
 
 use Tests\TestCase;
 use App\Models\User;
@@ -13,7 +13,7 @@ use Spatie\Permission\Models\Permission;
 use Illuminate\Support\Facades\Hash;
 
 
-class UniTestsDanielTest extends TestCase
+class DanielUnitTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -233,7 +233,7 @@ class UniTestsDanielTest extends TestCase
             'address2' => 'N/A',
             'city' => 'Alajuela',
             'zip' => '10101',
-            'birthday' => now()->subYears(2)->format('Y-m-d'), // 🙋 SOLO 2 años
+            'birthday' => now()->subYears(2)->format('Y-m-d'), //  SOLO 2 años
             'religion' => 'None',
             'blood_type' => 'O+',
             'password' => 'Secret123!',
@@ -328,7 +328,7 @@ class UniTestsDanielTest extends TestCase
             'zip' => '10101',
             'birthday' => '2010-05-10',
             'religion' => 'None',
-            'blood_type' => 'Tornillo-14mm', // ❌ valor inválido
+            'blood_type' => 'Tornillo-14mm', //  valor inválido
             'password' => 'Secret123!',
             'id_card_number' => '1234567',
             'father_name' => 'Oscar',
@@ -997,6 +997,14 @@ class UniTestsDanielTest extends TestCase
         $teacherIntruder = User::factory()->create(['email' => 'intruder@example.com']);
         $teacherIntruder->assignRole('teacher');
 
+        $this->semester = \App\Models\Semester::create([
+            'semester_name' => 'Semestre Test',
+            'start_date' => '2025-01-01',
+            'end_date' => '2025-06-01',
+            'session_id' => $this->session->id,
+        ]);
+
+
         // Asignar curso al teacherOwner
         \App\Models\AssignedTeacher::create([
             'teacher_id' => $teacherOwner->id,
@@ -1004,6 +1012,7 @@ class UniTestsDanielTest extends TestCase
             'class_id' => $this->class->id,
             'section_id' => $this->section->id,
             'session_id' => $this->session->id,
+            'semester_id' => $this->semester->id,
         ]);
 
         // Crear estudiante + nota
@@ -1018,6 +1027,17 @@ class UniTestsDanielTest extends TestCase
             'board_reg_no' => 'BRX-55'
         ]);
 
+        $exam = \App\Models\Exam::create([
+            'exam_name'   => 'Examen Parcial',
+            'start_date'  => '2025-01-10 00:00:00',
+            'end_date'    => '2025-01-15 00:00:00',
+            'class_id'    => $this->class->id,
+            'course_id'   => $this->course->id,
+            'semester_id' => $this->semester->id,
+            'session_id'  => $this->session->id,
+        ]);
+
+
         // Nota registrada previamente
         $nota = \App\Models\Mark::create([
             'student_id' => $student->id,
@@ -1025,12 +1045,13 @@ class UniTestsDanielTest extends TestCase
             'class_id' => $this->class->id,
             'section_id' => $this->section->id,
             'session_id' => $this->session->id,
-            'mark_obtained' => 75
+            'exam_id' => $exam->id,
+            'marks' => 75
         ]);
 
         // Payload de edición
         $payload = [
-            'mark_obtained' => 95
+            'marks' => 95
         ];
 
         //  Acceso  PROFESOR intruso intenta editar

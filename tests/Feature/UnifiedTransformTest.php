@@ -2,18 +2,20 @@
 
 namespace Tests\Feature;
 
+use App\Http\Middleware\VerifyCsrfToken;
+use App\Http\Requests\SchoolSessionBrowseRequest;
+use App\Http\Requests\SchoolSessionStoreRequest;
+use App\Models\User;
+use Illuminate\Routing\Route;
+use Spatie\Permission\Models\Permission;
 use Tests\TestCase;
-use App\Models\Student;
+//use App\Models\Student;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-class TestEstudianteCreacion extends TestCase
+class UnifiedTransformTest extends TestCase
 {
     use RefreshDatabase;
 
-
-
-    
-    
     protected function makeAdmin(): User
     {
         $u = User::factory()->create();
@@ -37,8 +39,8 @@ class TestEstudianteCreacion extends TestCase
 
 
     /**
-     * 
-     * 
+     *
+     *
      * 75. Estudiante no puede acceder al módulo de asistencia > <
     */
 
@@ -55,8 +57,8 @@ class TestEstudianteCreacion extends TestCase
     }
 
     /**
-     * 
-     * 
+     *
+     *
      * 76. Que un usuario no autenticado pueda ver el formulario de log in.
     */
 
@@ -69,9 +71,9 @@ class TestEstudianteCreacion extends TestCase
     }
 
     /**
-     * 
-     * 
-     * 77. Que un usuario autenticado no pueda ver la ruta de “login”, 
+     *
+     *
+     * 77. Que un usuario autenticado no pueda ver la ruta de “login”,
      * este debe ser redirigido a la ruta de “home”.
     */
 
@@ -86,8 +88,8 @@ class TestEstudianteCreacion extends TestCase
     }
 
     /**
-     * 
-     * 
+     *
+     *
      * 78. Que un usuario pueda iniciar sesión y sea redirigido a la ruta de “home”.
     */
 
@@ -107,8 +109,8 @@ class TestEstudianteCreacion extends TestCase
     }
 
     /**
-     * 
-     * 
+     *
+     *
      * 79. Que se pueda crear una sesión académica.
     */
 
@@ -140,16 +142,16 @@ class TestEstudianteCreacion extends TestCase
         $this->assertDatabaseHas('school_sessions', [
             'session_name' => $data['session_name']
         ]);
-        
 
-       
+
+
     }
 
     /**
-     * 
-     * 
-     * 80. Probar que el FormRequest SchoolSessionStoreRequest 
-     * falle si el usuario que se está utilizando no tiene el 
+     *
+     *
+     * 80. Probar que el FormRequest SchoolSessionStoreRequest
+     * falle si el usuario que se está utilizando no tiene el
      * permiso “create school sessions”.
     */
 
@@ -177,9 +179,9 @@ class TestEstudianteCreacion extends TestCase
     }
 
     /**
-     * 
-     * 
-     * 81. Probar que el FormRequest SchoolSessionBrowseRequest falle si el 
+     *
+     *
+     * 81. Probar que el FormRequest SchoolSessionBrowseRequest falle si el
      * usuario que se está utilizando no tiene el permiso “update browse by session”.
     */
 
@@ -206,9 +208,9 @@ class TestEstudianteCreacion extends TestCase
 
 
     /**
-     * 
-     * 
-     * 82. Probar que el FormRequest SectionStoreRequest falle si el usuario que 
+     *
+     *
+     * 82. Probar que el FormRequest SectionStoreRequest falle si el usuario que
      * se está utilizando no tiene el permiso “update browse by session”.
     */
 
@@ -225,9 +227,9 @@ class TestEstudianteCreacion extends TestCase
     }
 
     /**
-     * 
-     * 
-     * 83. Probar que el FormRequest SemesterStoreRequest falle si el 
+     *
+     *
+     * 83. Probar que el FormRequest SemesterStoreRequest falle si el
      * usuario que se está utilizando no tiene el permiso “create semesters”.
     */
 
@@ -244,9 +246,9 @@ class TestEstudianteCreacion extends TestCase
     }
 
     /**
-     * 
-     * 
-     * 84. Probar que el FormRequest StoreFileRequest falle si el usuario que se está 
+     *
+     *
+     * 84. Probar que el FormRequest StoreFileRequest falle si el usuario que se está
      * utilizando no tiene el permiso “create assignments" y “create syllabi”.
     */
 
@@ -263,9 +265,9 @@ class TestEstudianteCreacion extends TestCase
     }
 
     /**
-     * 
-     * 
-     * 85. Probar que el FormRequest TeacherStoreRequest falle si el 
+     *
+     *
+     * 85. Probar que el FormRequest TeacherStoreRequest falle si el
      * usuario que se está utilizando no tiene el permiso “create users".
     */
 
@@ -282,9 +284,9 @@ class TestEstudianteCreacion extends TestCase
     }
 
     /**
-     * 
-     * 
-     * 86. Probar que el FormRequest 
+     *
+     *
+     * 86. Probar que el FormRequest
      * StudentStoreRequest falle si el usuario que se está utilizando no tiene el permiso “create users".
     */
 
@@ -301,9 +303,9 @@ class TestEstudianteCreacion extends TestCase
     }
 
     /**
-     * 
-     * 
-     * 87. Probar que el FormRequest AttendanceTypeUpdateRequest 
+     *
+     *
+     * 87. Probar que el FormRequest AttendanceTypeUpdateRequest
      * falle si el usuario que se está utilizando no tiene el permiso “update attendances type".
     */
 
@@ -320,9 +322,9 @@ class TestEstudianteCreacion extends TestCase
     }
 
     /**
-     * 
-     * 
-     * 88. Probar que el FormRequest TeacherAssignRequest 
+     *
+     *
+     * 88. Probar que el FormRequest TeacherAssignRequest
      * falle si el usuario que se está utilizando no tiene el permiso “assign teachers".
     */
 
@@ -340,9 +342,9 @@ class TestEstudianteCreacion extends TestCase
     }
 
     /**
-     * 
-     * 
-     * 89. Probar que el FormRequest AttendanceStoreRequest 
+     *
+     *
+     * 89. Probar que el FormRequest AttendanceStoreRequest
      * falle si el usuario que se está utilizando no tiene el permiso “take attendances".
     */
 
@@ -359,9 +361,9 @@ class TestEstudianteCreacion extends TestCase
     }
 
     /**
-     * 
-     * 
-     * 90. Probar que el FormRequest CourseStoreRequest 
+     *
+     *
+     * 90. Probar que el FormRequest CourseStoreRequest
      * falle si el usuario que se está utilizando no tiene el permiso “create courses".
     */
 
@@ -378,9 +380,9 @@ class TestEstudianteCreacion extends TestCase
     }
 
     /**
-     * 
-     * 
-     * 91. Probar que el FormRequest ExamStoreRequest 
+     *
+     *
+     * 91. Probar que el FormRequest ExamStoreRequest
      * falle si el usuario que se está utilizando no tiene el permiso “create exams".
     */
 
@@ -397,9 +399,9 @@ class TestEstudianteCreacion extends TestCase
     }
 
     /**
-     * 
-     * 
-     * 92. Probar que el FormRequest ExamRuleStoreRequest 
+     *
+     *
+     * 92. Probar que el FormRequest ExamRuleStoreRequest
      * falle si el usuario que se está utilizando no tiene el permiso “create exams rule".
     */
 
@@ -416,9 +418,9 @@ class TestEstudianteCreacion extends TestCase
     }
 
     /**
-     * 
-     * 
-     * 93. Probar que el FormRequest GradeRuleStoreRequest falle 
+     *
+     *
+     * 93. Probar que el FormRequest GradeRuleStoreRequest falle
      * si el usuario que se está utilizando no tiene el permiso “create grading systems rule".
     */
 
@@ -435,9 +437,9 @@ class TestEstudianteCreacion extends TestCase
     }
 
     /**
-     * 
-     * 
-     * 94. Probar que el FormRequest GradingSystemStoreRequest falle 
+     *
+     *
+     * 94. Probar que el FormRequest GradingSystemStoreRequest falle
      * si el usuario que se está utilizando no tiene el permiso “create grading systems".
     */
 
@@ -454,9 +456,9 @@ class TestEstudianteCreacion extends TestCase
     }
 
     /**
-     * 
-     * 
-     * 95. Probar que el FormRequest NoticeStoreRequest 
+     *
+     *
+     * 95. Probar que el FormRequest NoticeStoreRequest
      * falle si el usuario que se está utilizando no tiene el permiso “create notices".
     */
 
@@ -473,8 +475,8 @@ class TestEstudianteCreacion extends TestCase
     }
 
     /**
-     * 
-     * 
+     *
+     *
      * 96. Probar que el FormRequest PasswordChangeRequest falle si el usuario no está autenticado.
     */
 
@@ -490,9 +492,9 @@ class TestEstudianteCreacion extends TestCase
     }
 
     /**
-     * 
-     * 
-     * 97. Probar que el FormRequest RoutineStoreRequest 
+     *
+     *
+     * 97. Probar que el FormRequest RoutineStoreRequest
      * falle si el usuario que se está utilizando no tiene el permiso “create routines".
     */
 
@@ -509,9 +511,9 @@ class TestEstudianteCreacion extends TestCase
     }
 
     /**
-     * 
-     * 
-     * 98. Probar que el FormRequest SchoolClassStoreRequest 
+     *
+     *
+     * 98. Probar que el FormRequest SchoolClassStoreRequest
      * falle si el usuario que se está utilizando no tiene el permiso “create classes".
     */
 
@@ -528,9 +530,9 @@ class TestEstudianteCreacion extends TestCase
     }
 
     /**
-     * 
-     * 
-     * 99. Verificar que al cambiar la contraseña si se ingresa la 
+     *
+     *
+     * 99. Verificar que al cambiar la contraseña si se ingresa la
      * contraseña anterior incorrectamente, el sistema devuelve el error de “Password mismatched!”
     */
 
@@ -550,9 +552,9 @@ class TestEstudianteCreacion extends TestCase
     }
 
     /**
-     * 
-     * 
-     * 100. El FormRequest de PasswordChangeRequest valida correctamente que una nueva contraseña no se 
+     *
+     *
+     * 100. El FormRequest de PasswordChangeRequest valida correctamente que una nueva contraseña no se
      * encuentre comprometida, asegurando que los usuarios tengan que ingresar contraseñas más seguras.
     */
 

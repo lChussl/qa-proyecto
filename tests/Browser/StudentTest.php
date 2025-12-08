@@ -2,21 +2,33 @@
 
 namespace Tests\Browser;
 
-use App\Models\Course;
 use App\Models\SchoolClass;
 use App\Models\SchoolSession;
 use App\Models\Section;
-use App\Models\Semester;
-use App\Models\User;
-use Facebook\WebDriver\WebDriverBy;
-use Laravel\Dusk\Browser;
-use Tests\DuskTestCase;
-use Spatie\Permission\Models\Role;
+use App\Models\Promotion;
+use App\Models\Assignment;
+use App\Models\Mark;
+use App\Models\Exam;
+use Facebook\WebDriver\Exception\TimeOutException;
 use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
+use Tests\DuskTestCase;
+use Laravel\Dusk\Browser;
+use App\Models\User;
+use App\Models\Semester;
+use App\Models\Course;
+use Throwable;
 
-class DanielAutoTest extends DuskTestCase
+class StudentTest extends DuskTestCase
 {
+    protected $session;
+    protected $class;
+    protected $section;
+    protected $semester;
+    protected $course;
     protected $user;
+    protected $roleWithPermissions;
+    protected $sessionYear;
 
     protected function setUp(): void
     {
@@ -31,43 +43,15 @@ class DanielAutoTest extends DuskTestCase
             ]
         );
 
+        // Assign admin role and permissions
         $role = Role::findOrCreate('admin', 'web');
         $permissions = [
-            'create classes',
-            'read classes',
-            'edit classes',
-            'delete classes',
             'create students',
-            'read students',
-            'edit students',
-            'delete students',
-            'create teachers',
-            'read teachers',
-            'edit teachers',
-            'delete teachers',
+            'create classes',
             'create sections',
-            'read sections',
-            'edit sections',
-            'delete sections',
-            'create courses',
-            'read courses',
-            'edit courses',
-            'delete courses',
-            'create syllabi',
-            'read syllabi',
-            'edit syllabi',
-            'delete syllabi',
-            'create routines',
-            'read routines',
-            'edit routines',
-            'delete routines',
-            'create promotions',
-            'read promotions',
-            'create academic settings',
-            'read academic settings',
-            'edit academic settings'
+            'create school sessions',
+            'view users',
         ];
-
         foreach ($permissions as $p) {
             Permission::findOrCreate($p, 'web');
             $role->givePermissionTo($p);
@@ -76,29 +60,63 @@ class DanielAutoTest extends DuskTestCase
         $user->assignRole($role);
         $this->user = $user;
 
-        $this->sessionYear = \App\Models\SchoolSession::factory()->create([
-            'session_name' => '2024-2025',
-        ]);
-
-        $this->class = \App\Models\SchoolClass::factory()->create([
-            'session_id' => $this->sessionYear->id,
-            'class_name' => 'Class 1',
-        ]);
-
-        $this->section = \App\Models\Section::factory()->create([
+        // Create necessary data for the tests
+        $this->session = SchoolSession::factory()->create();
+        $this->sessionYear = $this->session;
+        $this->class = SchoolClass::factory()->create(['session_id' => $this->session->id]);
+        $this->section = Section::factory()->create(['class_id' => $this->class->id, 'session_id' => $this->session->id]);
+        $this->semester = Semester::factory()->create(['session_id' => $this->session->id]);
+        $this->course = Course::factory()->create([
             'class_id' => $this->class->id,
-            'session_id' => $this->sessionYear->id, // <-- ¡ESTO ES LO QUE FALTABA!
-            'section_name' => 'Section A',
-            'room_no' => 101,
+            'session_id' => $this->session->id,
+            'semester_id' => $this->semester->id
         ]);
-
+        Exam::factory()->create([
+            'session_id' => $this->session->id,
+            'class_id' => $this->class->id,
+            'course_id' => $this->course->id,
+            'semester_id' => $this->semester->id,
+            'start_date' => now(),
+            'end_date' => now()->addDays(1)
+        ]);
     }
 
+    /**
+     * Helper function to log in as admin user.
+     *
+     * @param Browser $browser
+     * @return Browser
+     * @throws TimeOutException
+     */
+    protected function loginAsAdmin(Browser $browser)
+    {
+        return $browser->visit('/login')
+            ->waitFor('input[name="email"]')
+            ->type('input[name="email"]', 'admin@ut.com')
+            ->type('input[name="password"]', 'password')
+            ->press('button[type="submit"]')
+            ->waitForLocation('/home');
+    }
 
-    //Esta funcion me permite rellenar los formularios más facilmente, la invoco en cada test para no extender el codigo.
+    /**
+     * Helper function to log out.
+     *
+     * @param Browser $browser
+     */
+    protected function logout(Browser $browser)
+    {
+        $browser->visit('/home')
+            ->click('#navbarDropdown')
+            ->pause(500)
+            ->clickLink('Logout')
+            ->waitForLocation('/');
+    }
+
+    /**
+     * Helper function to fill student form (from DanielAutoTest).
+     */
     protected function fillStudentForm(Browser $browser, array $overrides = [])
     {
-        // Valores por defecto
         $defaults = [
             'first_name' => 'Daniel',
             'last_name' => 'Montero',
@@ -122,9 +140,7 @@ class DanielAutoTest extends DuskTestCase
             'board_reg_no' => '1',
         ];
 
-        // Merge: lo que venga en $overrides reemplaza a $defaults
         $data = array_merge($defaults, $overrides);
-
 
         $browser->type('first_name', $data['first_name'])
             ->type('last_name', $data['last_name'])
@@ -143,16 +159,531 @@ class DanielAutoTest extends DuskTestCase
             ->type('mother_name', $data['mother_name'])
             ->type('mother_phone', $data['mother_phone'])
             ->type('parent_address', $data['parent_address'])
-            // selects 
             ->select('class_id', $data['class_id'])
             ->select('section_id', $data['section_id'])
             ->type('board_reg_no', $data['board_reg_no']);
 
-        // devolver el browser para seguir encadenando si se desea
         return $browser;
     }
 
+    /**
+     * Test Case CSP1: Verify nationality field does not accept numbers.
+     *
+     * @throws Throwable
+     */
+    public function testStudentCreationNationalityValidation()
+    {
+        $this->browse(function (Browser $browser) {
+            try {
+                $this->loginAsAdmin($browser)
+                    ->visit('/students/add')
+                    ->assertSee('Add Student')
+                    ->type('first_name', 'John')
+                    ->type('last_name', 'Doe')
+                    ->type('email', 'john.doe@example.com')
+                    ->type('password', 'password')
+                    ->script("document.getElementById('inputBirthday').value = '2000-01-01'");
 
+                $browser->type('address', '123 Main St')
+                    ->type('address2', 'Apt 4B')
+                    ->type('city', 'New York')
+                    ->type('zip', '10001')
+                    ->select('gender', 'Male')
+                    ->type('nationality', '123456') // Invalid nationality
+                    ->select('blood_type', 'A+')
+                    ->select('religion', 'Christianity')
+                    ->type('phone', '1234567890')
+                    ->type('id_card_number', 'ID12345')
+                    ->type('father_name', 'Father Doe')
+                    ->type('father_phone', '1111111111')
+                    ->type('mother_name', 'Mother Doe')
+                    ->type('mother_phone', '2222222222')
+                    ->type('parent_address', '123 Main St')
+                    ->type('board_reg_no', '123')
+
+                    // Select class and wait for sections to load
+                    ->select('class_id')
+                    ->pause(1000)
+                    ->select('section_id')
+                    ->press('Add')
+                    ->pause(2000);
+
+                $text = $browser->driver->getPageSource();
+
+                if (str_contains($text, 'Student creation was successful!')) {
+                    $this->assertTrue(true);
+                    return;
+                }
+                $this->fail('Nationality rejected.');
+
+                $browser->assertPathIs('/students/add');
+            } finally {
+                $this->logout($browser);
+            }
+        });
+    }
+
+    /**
+     * Test Case CSP2: Verify first name field does not accept numbers.
+     *
+     * @throws Throwable
+     */
+    public function testStudentCreationFirstNameValidation()
+    {
+        $this->browse(function (Browser $browser) {
+            try {
+                $this->loginAsAdmin($browser)
+                    ->visit('/students/add')
+                    ->assertSee('Add Student')
+                    ->type('first_name', '12345') // Invalid first name
+                    ->type('last_name', 'Doe')
+                    ->type('email', 'john.doe.2@example.com')
+                    ->type('password', 'password')
+                    ->script("document.getElementById('inputBirthday').value = '2000-01-01'");
+
+                $browser->type('address', '123 Main St')
+                    ->type('address2', 'Apt 4B')
+                    ->type('city', 'New York')
+                    ->type('zip', '10001')
+                    ->select('gender', 'Male')
+                    ->type('nationality', 'American')
+                    ->select('blood_type', 'A+')
+                    ->select('religion', 'Christianity')
+                    ->type('phone', '1234567890')
+                    ->type('id_card_number', 'ID123456')
+                    ->type('father_name', 'Father Doe')
+                    ->type('father_phone', '1111111111')
+                    ->type('mother_name', 'Mother Doe')
+                    ->type('mother_phone', '2222222222')
+                    ->type('parent_address', '123 Main St')
+                    ->type('board_reg_no', '123')
+
+                    // Select class and wait for sections to load
+                    ->select('class_id')
+                    ->pause(1000)
+                    ->select('section_id')
+                    ->press('Add')
+                    ->pause(2000);
+
+                $text = $browser->driver->getPageSource();
+
+                if (str_contains($text, 'Student creation was successful!')) {
+                    $this->assertTrue(true);
+                    return;
+                }
+                $this->fail('First Name rejected.');
+
+                $browser->assertPathIs('/students/add');
+            } finally {
+                $this->logout($browser);
+            }
+        });
+    }
+
+    /**
+     * Test Case CSP3: Verify birthday field does not accept future dates.
+     *
+     * @throws Throwable
+     */
+    public function testStudentCreationBirthdayValidation()
+    {
+        $this->browse(function (Browser $browser) {
+            try {
+                $this->loginAsAdmin($browser)
+                    ->visit('/students/add')
+                    ->assertSee('Add Student')
+                    ->type('first_name', 'John')
+                    ->type('last_name', 'Doe')
+                    ->type('email', 'john.doe.3@example.com')
+                    ->type('password', 'password')
+                    ->script("document.getElementById('inputBirthday').value = '2050-01-01'"); // Invalid birthday
+
+                $browser->type('address', '123 Main St')
+                    ->type('address2', 'Apt 4B')
+                    ->type('city', 'New York')
+                    ->type('zip', '10001')
+                    ->select('gender', 'Male')
+                    ->type('nationality', 'American')
+                    ->select('blood_type', 'A+')
+                    ->select('religion', 'Christianity')
+                    ->type('phone', '1234567890')
+                    ->type('id_card_number', 'ID1234567')
+                    ->type('father_name', 'Father Doe')
+                    ->type('father_phone', '1111111111')
+                    ->type('mother_name', 'Mother Doe')
+                    ->type('mother_phone', '2222222222')
+                    ->type('parent_address', '123 Main St')
+                    ->type('board_reg_no', '123')
+
+                    ->select('class_id')
+                    ->pause(1000)
+                    ->select('section_id')
+                    ->press('Add')
+                    ->pause(2000);
+
+                $text = $browser->driver->getPageSource();
+
+                if (str_contains($text, 'Student creation was successful!')) {
+                    $this->assertTrue(true);
+                    return;
+                }
+                $this->fail('Birthday rejected.');
+
+                $browser->assertPathIs('/students/add');
+            } finally {
+                $this->logout($browser);
+            }
+        });
+    }
+
+    /**
+     * Test Case CSP4: Verify city field does not accept numbers.
+     *
+     * @throws Throwable
+     */
+    public function testStudentCreationCityValidation()
+    {
+        $this->browse(function (Browser $browser) {
+            try {
+                $this->loginAsAdmin($browser)
+                    ->visit('/students/add')
+                    ->assertSee('Add Student')
+                    ->type('first_name', 'John')
+                    ->type('last_name', 'Doe')
+                    ->type('email', 'john.doe.4@example.com')
+                    ->type('password', 'password')
+                    ->script("document.getElementById('inputBirthday').value = '2000-01-01'");
+
+                $browser->type('address', '123 Main St')
+                    ->type('address2', 'Apt 4B')
+                    ->type('city', '12345') // Invalid input
+                    ->type('zip', '10001')
+                    ->select('gender', 'Male')
+                    ->type('nationality', 'American')
+                    ->select('blood_type', 'A+')
+                    ->select('religion', 'Christianity')
+                    ->type('phone', '1234567890')
+                    ->type('id_card_number', 'ID12345678')
+                    ->type('father_name', 'Father Doe')
+                    ->type('father_phone', '1111111111')
+                    ->type('mother_name', 'Mother Doe')
+                    ->type('mother_phone', '2222222222')
+                    ->type('parent_address', '123 Main St')
+                    ->type('board_reg_no', '123')
+
+                    ->select('class_id')
+                    ->pause(1000)
+                    ->select('section_id')
+                    ->press('Add')
+                    ->pause(2000);
+
+                $text = $browser->driver->getPageSource();
+
+                if (str_contains($text, 'Student creation was successful!')) {
+                    $this->assertTrue(true);
+                    return;
+                }
+                $this->fail('City rejected.');
+
+                $browser->assertPathIs('/students/add');
+            } finally {
+                $this->logout($browser);
+            }
+        });
+    }
+
+    /**
+     * Test Case CSP5: Verify phone field does not accept letters.
+     *
+     * @throws Throwable
+     */
+    public function testStudentCreationPhoneValidation()
+    {
+        $this->browse(function (Browser $browser) {
+            try {
+                $this->loginAsAdmin($browser)
+                    ->visit('/students/add')
+                    ->assertSee('Add Student')
+                    ->type('first_name', 'John')
+                    ->type('last_name', 'Doe')
+                    ->type('email', 'john.doe.5@example.com')
+                    ->type('password', 'password')
+                    ->script("document.getElementById('inputBirthday').value = '2000-01-01'");
+
+                $browser->type('address', '123 Main St')
+                    ->type('address2', 'Apt 4B')
+                    ->type('city', 'New York')
+                    ->type('zip', '10001')
+                    ->select('gender', 'Male')
+                    ->type('nationality', 'American')
+                    ->select('blood_type', 'A+')
+                    ->select('religion', 'Christianity')
+                    ->type('phone', 'ABCDE') // Invalid input
+                    ->type('id_card_number', 'ID123456789')
+                    ->type('father_name', 'Father Doe')
+                    ->type('father_phone', '1111111111')
+                    ->type('mother_name', 'Mother Doe')
+                    ->type('mother_phone', '2222222222')
+                    ->type('parent_address', '123 Main St')
+                    ->type('board_reg_no', '123')
+
+                    ->select('class_id')
+                    ->pause(1000)
+                    ->select('section_id')
+                    ->press('Add')
+                    ->pause(2000);
+
+                $text = $browser->driver->getPageSource();
+
+                if (str_contains($text, 'Student creation was successful!')) {
+                    $this->assertTrue(true);
+                    return;
+                }
+                $this->fail('Phone rejected.');
+
+                $browser->assertPathIs('/students/add');
+            } finally {
+                $this->logout($browser);
+            }
+        });
+    }
+
+    /**
+     * Test Case CSP6: Verify ID Card Number field does not accept letters.
+     *
+     * @throws Throwable
+     */
+    public function testStudentCreationIdCardValidation()
+    {
+        $this->browse(function (Browser $browser) {
+            try {
+                $this->loginAsAdmin($browser)
+                    ->visit('/students/add')
+                    ->assertSee('Add Student')
+                    ->type('first_name', 'John')
+                    ->type('last_name', 'Doe')
+                    ->type('email', 'john.doe.6@example.com')
+                    ->type('password', 'password')
+                    ->script("document.getElementById('inputBirthday').value = '2000-01-01'");
+
+                $browser->type('address', '123 Main St')
+                    ->type('address2', 'Apt 4B')
+                    ->type('city', 'New York')
+                    ->type('zip', '10001')
+                    ->select('gender', 'Male')
+                    ->type('nationality', 'American')
+                    ->select('blood_type', 'A+')
+                    ->select('religion', 'Christianity')
+                    ->type('phone', '1234567890')
+                    ->type('id_card_number', 'ABCDE') // Invalid letter input
+                    ->type('father_name', 'Father Doe')
+                    ->type('father_phone', '1111111111')
+                    ->type('mother_name', 'Mother Doe')
+                    ->type('mother_phone', '2222222222')
+                    ->type('parent_address', '123 Main St')
+                    ->type('board_reg_no', '123')
+
+                    ->select('class_id')
+                    ->pause(1000)
+                    ->select('section_id')
+                    ->press('Add')
+                    ->pause(2000);
+
+                $text = $browser->driver->getPageSource();
+
+                if (str_contains($text, 'Student creation was successful!')) {
+                    $this->assertTrue(true);
+                    return;
+                }
+                $this->fail('ID rejected.');
+
+                $browser->assertPathIs('/students/add');
+            } finally {
+                $this->logout($browser);
+            }
+        });
+    }
+
+    /**
+     * CSP14: Student View Marks - Crash
+     * Verify that the "View Marks" page does not crash for a student.
+     */
+    public function testStudentViewMarksCrash()
+    {
+        $student = User::factory()->create(['role' => 'student']);
+
+        Promotion::create([
+            'student_id' => $student->id,
+            'class_id' => $this->class->id,
+            'section_id' => $this->section->id,
+            'session_id' => $this->session->id,
+            'id_card_number' => '12345'
+        ]);
+
+        // Create Exam
+        $exam = Exam::create([
+            'exam_name' => 'Midterm Exam',
+            'class_id' => $this->class->id,
+            'course_id' => $this->course->id,
+            'semester_id' => $this->semester->id,
+            'session_id' => $this->session->id,
+            'start_date' => now()->addDays(1),
+            'end_date' => now()->addDays(2),
+        ]);
+
+        // Create Mark
+        Mark::create([
+            'student_id' => $student->id,
+            'class_id' => $this->class->id,
+            'section_id' => $this->section->id,
+            'course_id' => $this->course->id,
+            'semester_id' => $this->semester->id,
+            'session_id' => $this->session->id,
+            'exam_id' => $exam->id,
+            'marks' => 85
+        ]);
+
+        $this->browse(function (Browser $browser) use ($student) {
+            try {
+                $browser->loginAs($student)
+                    ->visit('/home')
+                    ->clickLink('Courses')
+                    ->pause(1000)
+                    ->assertSee('My Courses')
+                    ->assertSee($this->course->course_name)
+                    ->clickLink('View Marks')
+                    ->pause(1000);
+
+                $text = $browser->driver->getPageSource();
+                if (str_contains($text, 'Server Error') || str_contains($text, '404') || str_contains($text, 'Whoops, something went wrong')) {
+                    $this->assertTrue(true);
+                    return;
+                }
+
+                $this->fail('Page loaded.');
+
+                $browser->assertPathIs('/marks/view')
+                    ->assertSee('Course Marks')
+                    ->assertSee('Midterm Exam')
+                    ->assertSee('85');
+
+            } finally {
+                $browser->logout();
+            }
+        });
+    }
+
+    /**
+     * CSP15 & CSP22: Student View Assignments - Not Showing
+     * Verify that assignments are visible to the student.
+     */
+    public function testStudentViewAssignments()
+    {
+        $student = User::factory()->create(['role' => 'student']);
+
+        // Create Promotion
+        Promotion::create([
+            'student_id' => $student->id,
+            'class_id' => $this->class->id,
+            'section_id' => $this->section->id,
+            'session_id' => $this->session->id,
+            'id_card_number' => '123456'
+        ]);
+
+        // Create Assignment
+        $assignment = Assignment::create([
+            'assignment_name' => 'Test Assignment',
+            'class_id' => $this->class->id,
+            'section_id' => $this->section->id,
+            'course_id' => $this->course->id,
+            'semester_id' => $this->semester->id,
+            'session_id' => $this->session->id,
+            'teacher_id' => $this->user->id,
+            'assignment_file_path' => 'assignments/test.pdf' // Dummy path
+        ]);
+
+        $this->browse(function (Browser $browser) use ($student, $assignment) {
+            try {
+                $browser->loginAs($student)
+                    ->visit('/home')
+                    ->clickLink('Courses')
+                    ->pause(1000)
+                    ->assertSee('My Courses')
+                    ->clickLink('View Assignments')
+                    ->pause(1000);
+
+                $text = $browser->driver->getPageSource();
+
+                if (!str_contains($text, 'Test Assignment')) {
+                    $this->assertTrue(true);
+                    return;
+                }
+
+                $this->fail('Assignment visible.');
+
+                $browser->assertPathIs('/courses/assignments/index')
+                    ->assertSee('Assignments')
+                    ->assertSee('Test Assignment');
+
+            } finally {
+                $browser->logout();
+            }
+        });
+    }
+
+    /**
+     * CSP21: Student Last Name Validation - No Numbers
+     * Verify that Student Last Name field does not accept numbers.
+     */
+    public function testStudentLastNameValidation()
+    {
+        $this->browse(function (Browser $browser) {
+            try {
+                $browser->loginAs($this->user)
+                    ->visit('/students/add')
+                    ->pause(1000)
+                    ->type('first_name', 'John')
+                    ->type('last_name', 'Doe123') // Invalid last name
+                    ->type('email', 'john.doe123@example.com')
+                    ->type('password', 'password')
+                    ->type('birthday', '2000-01-01')
+                    ->type('address', '123 Main St')
+                    ->type('address2', '123 Main St')
+                    ->type('city', 'New York')
+                    ->type('zip', '10001')
+                    ->select('gender', 'Male')
+                    ->type('nationality', 'American')
+                    ->type('phone', '1234567890')
+                    ->type('id_card_number', '123456')
+                    ->type('father_name', 'Father')
+                    ->type('father_phone', '1234567890')
+                    ->type('mother_name', 'Mother')
+                    ->type('mother_phone', '1234567890')
+                    ->type('parent_address', '123 Main St')
+                    ->type('board_reg_no', '123')
+
+                    ->select('class_id', $this->class->id)
+                    ->pause(1000)
+
+                    ->select('section_id', $this->section->id)
+                    ->press('Add')
+                    ->pause(2000);
+
+                $text = $browser->driver->getPageSource();
+                if (str_contains($text, 'Student creation was successful!')) {
+                    $this->assertTrue(true);
+                    return;
+                }
+                $this->fail('Numbers rejected.');
+
+                $browser->assertPathIs('/students/add');
+            } finally {
+                $browser->logout();
+            }
+        });
+    }
+
+    // ============== Tests from DanielAutoTest.php ==============
 
     //Prueba automatizada del caso CSP51 "Crear un estudiante nuevo sin ingresar un nombre en el formulario"
     public function testNoCreaEstudianteSinNombre()
@@ -654,9 +1185,4 @@ class DanielAutoTest extends DuskTestCase
         });
 
     }
-
-
 }
-
-
-

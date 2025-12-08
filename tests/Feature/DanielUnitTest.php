@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Feature\UniTestsDaniel;
+namespace Tests\Feature\DanielUnitTest;
 
 use Tests\TestCase;
 use App\Models\User;
@@ -13,7 +13,7 @@ use Spatie\Permission\Models\Permission;
 use Illuminate\Support\Facades\Hash;
 
 
-class UniTestsDanielTest extends TestCase
+class DanielUnitTest extends TestCase
 {
     use RefreshDatabase;
 

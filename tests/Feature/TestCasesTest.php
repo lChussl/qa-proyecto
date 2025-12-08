@@ -30,11 +30,12 @@ use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
-class TestCases extends TestCase
+class TestCasesTest extends TestCase
 {
     public function setUp(): void
     {
         parent::setUp();
+        $this->artisan('migrate:fresh --seed');
     }
 
     /**

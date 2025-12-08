@@ -13,7 +13,7 @@ use Spatie\Permission\Models\Permission;
 use Illuminate\Support\Facades\Hash;
 
 
-class UniTestsDaniel extends TestCase
+class UniTestsDanielTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -66,10 +66,10 @@ class UniTestsDaniel extends TestCase
 
         // Crear section
         $this->section = \App\Models\Section::create([
-            'session_id'     => $this->session->id,
-            'class_id'       => $this->class->id,
-            'section_name'   => 'Section A',
-            'room_no'        => '101'
+            'session_id' => $this->session->id,
+            'class_id' => $this->class->id,
+            'section_name' => 'Section A',
+            'room_no' => '101'
         ]);
 
 
@@ -96,7 +96,7 @@ class UniTestsDaniel extends TestCase
     protected function makeAdmin(): User
     {
         $u = User::factory()->create();
-        $u->assignRole('admin');  
+        $u->assignRole('admin');
         return $u;
     }
 
@@ -111,34 +111,34 @@ class UniTestsDaniel extends TestCase
         $admin->assignRole('admin');
 
         $payload = [
-            'first_name'      => 'Juan',
-            'last_name'       => 'Pérez',
-            'email'           => 'juanp@example.com',
-            'gender'          => 'male',
-            'nationality'     => 'Costa Rica',
-            'phone'           => '12345678',
-            'address'         => 'San José',
-            'address2'        => 'N/A',
-            'city'            => 'Alajuela',
-            'zip'             => '10101',
-            'birthday'        => '2010-05-10',
-            'religion'        => 'None',
-            'blood_type'      => 'O+',
-            'password'        => 'Secret123!',
-            'id_card_number'  => '1234567',
+            'first_name' => 'Juan',
+            'last_name' => 'Pérez',
+            'email' => 'juanp@example.com',
+            'gender' => 'male',
+            'nationality' => 'Costa Rica',
+            'phone' => '12345678',
+            'address' => 'San José',
+            'address2' => 'N/A',
+            'city' => 'Alajuela',
+            'zip' => '10101',
+            'birthday' => '2010-05-10',
+            'religion' => 'None',
+            'blood_type' => 'O+',
+            'password' => 'Secret123!',
+            'id_card_number' => '1234567',
 
             // Parents
-            'father_name'     => 'Oscar Pérez',
-            'father_phone'    => '88881111',
-            'mother_name'     => 'Ana Pérez',
-            'mother_phone'    => '77776666',
-            'parent_address'  => 'Barrio Los Ángeles',
+            'father_name' => 'Oscar Pérez',
+            'father_phone' => '88881111',
+            'mother_name' => 'Ana Pérez',
+            'mother_phone' => '77776666',
+            'parent_address' => 'Barrio Los Ángeles',
 
             // Academic related
-            'class_id'       => $this->class->id,
-            'section_id'     => $this->section->id,
-            'session_id'     => $this->session->id,
-            'board_reg_no'   => 'BRN-001'
+            'class_id' => $this->class->id,
+            'section_id' => $this->section->id,
+            'session_id' => $this->session->id,
+            'board_reg_no' => 'BRN-001'
         ];
 
 
@@ -170,34 +170,34 @@ class UniTestsDaniel extends TestCase
 
         // Payload que intenta registrar usando el mismo email
         $payload = [
-            'first_name'      => 'Carlos',
-            'last_name'       => 'Ramírez',
-            'email'           => 'correo@duplicado.com', // duplicado
-            'gender'          => 'male',
-            'nationality'     => 'Costa Rica',
-            'phone'           => '12345678',
-            'address'         => 'San José',
-            'address2'        => 'N/A',
-            'city'            => 'Alajuela',
-            'zip'             => '10101',
-            'birthday'        => '2009-02-10',
-            'religion'        => 'None',
-            'blood_type'      => 'O+',
-            'password'        => 'Secret123!',
-            'id_card_number'  => '77777',
+            'first_name' => 'Carlos',
+            'last_name' => 'Ramírez',
+            'email' => 'correo@duplicado.com', // duplicado
+            'gender' => 'male',
+            'nationality' => 'Costa Rica',
+            'phone' => '12345678',
+            'address' => 'San José',
+            'address2' => 'N/A',
+            'city' => 'Alajuela',
+            'zip' => '10101',
+            'birthday' => '2009-02-10',
+            'religion' => 'None',
+            'blood_type' => 'O+',
+            'password' => 'Secret123!',
+            'id_card_number' => '77777',
 
             // Parents
-            'father_name'     => 'Pedro',
-            'father_phone'    => '88889999',
-            'mother_name'     => 'María',
-            'mother_phone'    => '99998888',
-            'parent_address'  => 'Barrio Los Pinos',
+            'father_name' => 'Pedro',
+            'father_phone' => '88889999',
+            'mother_name' => 'María',
+            'mother_phone' => '99998888',
+            'parent_address' => 'Barrio Los Pinos',
 
             // Academic related
-            'class_id'       => $this->class->id,
-            'section_id'     => $this->section->id,
-            'session_id'     => $this->session->id,
-            'board_reg_no'   => 'BRN-010'
+            'class_id' => $this->class->id,
+            'section_id' => $this->section->id,
+            'session_id' => $this->session->id,
+            'board_reg_no' => 'BRN-010'
         ];
 
         $response = $this->actingAs($admin)->post(
@@ -223,38 +223,38 @@ class UniTestsDaniel extends TestCase
 
         // Payload con fecha que implica muy poca edad
         $payload = [
-            'first_name'      => 'Baby',
-            'last_name'       => 'Test',
-            'email'           => 'babytest@example.com',
-            'gender'          => 'male',
-            'nationality'     => 'Costa Rica',
-            'phone'           => '12345678',
-            'address'         => 'San José',
-            'address2'        => 'N/A',
-            'city'            => 'Alajuela',
-            'zip'             => '10101',
-            'birthday'        => now()->subYears(2)->format('Y-m-d'), // 🙋 SOLO 2 años
-            'religion'        => 'None',
-            'blood_type'      => 'O+',
-            'password'        => 'Secret123!',
-            'id_card_number'  => '999999',
+            'first_name' => 'Baby',
+            'last_name' => 'Test',
+            'email' => 'babytest@example.com',
+            'gender' => 'male',
+            'nationality' => 'Costa Rica',
+            'phone' => '12345678',
+            'address' => 'San José',
+            'address2' => 'N/A',
+            'city' => 'Alajuela',
+            'zip' => '10101',
+            'birthday' => now()->subYears(2)->format('Y-m-d'), // 🙋 SOLO 2 años
+            'religion' => 'None',
+            'blood_type' => 'O+',
+            'password' => 'Secret123!',
+            'id_card_number' => '999999',
 
             // Parents
-            'father_name'     => 'Papá',
-            'father_phone'    => '88881111',
-            'mother_name'     => 'Mamá',
-            'mother_phone'    => '77776666',
-            'parent_address'  => 'Barrio Los Ángeles',
+            'father_name' => 'Papá',
+            'father_phone' => '88881111',
+            'mother_name' => 'Mamá',
+            'mother_phone' => '77776666',
+            'parent_address' => 'Barrio Los Ángeles',
 
             // Academic
-            'class_id'       => $this->class->id,
-            'section_id'     => $this->section->id,
-            'session_id'     => $this->session->id,
-            'board_reg_no'   => 'BRN-002'
+            'class_id' => $this->class->id,
+            'section_id' => $this->section->id,
+            'session_id' => $this->session->id,
+            'board_reg_no' => 'BRN-002'
         ];
 
         $response = $this->actingAs($admin)
-                        ->post(route('school.student.create'), $payload);
+            ->post(route('school.student.create'), $payload);
 
         // ASSERTS → Validación debe fallar
         $response->assertStatus(302);
@@ -269,34 +269,34 @@ class UniTestsDaniel extends TestCase
         $admin->assignRole('admin');
 
         $payload = [
-            'first_name'      => 'Luis',
-            'last_name'       => 'Ramírez',
-            'email'           => 'lramirez@example.com',
-            'gender'          => 'male',
-            'nationality'     => 'Costa Rica',
-            'phone'           => '84758475',
-            'address'         => 'San José',
-            'address2'        => 'N/A',
-            'city'            => 'Alajuela',
-            'zip'             => '10101',
-            'birthday'        => '2009-05-10',
-            'religion'        => 'None',
-            'blood_type'      => 'O+',
-            'password'        => 'Secret123!',
+            'first_name' => 'Luis',
+            'last_name' => 'Ramírez',
+            'email' => 'lramirez@example.com',
+            'gender' => 'male',
+            'nationality' => 'Costa Rica',
+            'phone' => '84758475',
+            'address' => 'San José',
+            'address2' => 'N/A',
+            'city' => 'Alajuela',
+            'zip' => '10101',
+            'birthday' => '2009-05-10',
+            'religion' => 'None',
+            'blood_type' => 'O+',
+            'password' => 'Secret123!',
 
             // Campo con formato inválido
-            'id_card_number'  => 'ABC1234',
+            'id_card_number' => 'ABC1234',
 
-            'father_name'     => 'Carlos',
-            'father_phone'    => '88880001',
-            'mother_name'     => 'Karina',
-            'mother_phone'    => '70004422',
-            'parent_address'  => 'Paraiso',
+            'father_name' => 'Carlos',
+            'father_phone' => '88880001',
+            'mother_name' => 'Karina',
+            'mother_phone' => '70004422',
+            'parent_address' => 'Paraiso',
 
-            'class_id'       => $this->class->id,
-            'section_id'     => $this->section->id,
-            'session_id'     => $this->session->id,
-            'board_reg_no'   => 'BRN-002'
+            'class_id' => $this->class->id,
+            'section_id' => $this->section->id,
+            'session_id' => $this->session->id,
+            'board_reg_no' => 'BRN-002'
         ];
 
         $response = $this
@@ -316,30 +316,30 @@ class UniTestsDaniel extends TestCase
 
         // Valores NO válidos
         $payload = [
-            'first_name'      => 'Luis',
-            'last_name'       => 'Ramírez',
-            'email'           => 'lramirez@example.com',
-            'gender'          => 'male',
-            'nationality'     => 'Costa Rica',
-            'phone'           => '12345678',
-            'address'         => 'Alajuela Centro',
-            'address2'        => 'N/A',
-            'city'            => 'Alajuela',
-            'zip'             => '10101',
-            'birthday'        => '2010-05-10',
-            'religion'        => 'None',
-            'blood_type'      => 'Tornillo-14mm', // ❌ valor inválido
-            'password'        => 'Secret123!',
-            'id_card_number'  => '1234567',
-            'father_name'     => 'Oscar',
-            'father_phone'    => '88881111',
-            'mother_name'     => 'Ana',
-            'mother_phone'    => '11112222',
-            'parent_address'  => 'Barrio Los Sauces',
-            'class_id'        => $this->class->id,
-            'section_id'      => $this->section->id,
-            'session_id'      => $this->session->id,
-            'board_reg_no'    => 'BRN-002'
+            'first_name' => 'Luis',
+            'last_name' => 'Ramírez',
+            'email' => 'lramirez@example.com',
+            'gender' => 'male',
+            'nationality' => 'Costa Rica',
+            'phone' => '12345678',
+            'address' => 'Alajuela Centro',
+            'address2' => 'N/A',
+            'city' => 'Alajuela',
+            'zip' => '10101',
+            'birthday' => '2010-05-10',
+            'religion' => 'None',
+            'blood_type' => 'Tornillo-14mm', // ❌ valor inválido
+            'password' => 'Secret123!',
+            'id_card_number' => '1234567',
+            'father_name' => 'Oscar',
+            'father_phone' => '88881111',
+            'mother_name' => 'Ana',
+            'mother_phone' => '11112222',
+            'parent_address' => 'Barrio Los Sauces',
+            'class_id' => $this->class->id,
+            'section_id' => $this->section->id,
+            'session_id' => $this->session->id,
+            'board_reg_no' => 'BRN-002'
         ];
 
         $response = $this->actingAs($admin)
@@ -356,41 +356,41 @@ class UniTestsDaniel extends TestCase
      * no contiene columnas class_id, section_id ni session_id,
      * por lo tanto, la relación académica no se almacena.
      * Este comportamiento debe ser corregido a nivel de modelo y migración.
-    */
+     */
     /** @test */
     public function crea_academic_info_con_relaciones_correctas()
     {
         $admin = $this->makeAdmin();
 
         $payload = [
-            'first_name'      => 'Mario',
-            'last_name'       => 'Torres',
-            'email'           => 'mario.torres@example.com',
-            'gender'          => 'male',
-            'nationality'     => 'Costa Rica',
-            'phone'           => '65432100',
-            'address'         => 'San José',
-            'address2'        => 'N/A',
-            'city'            => 'San José',
-            'zip'             => '20202',
-            'birthday'        => '2010-01-01',
-            'religion'        => 'None',
-            'blood_type'      => 'AB+',
-            'password'        => 'Secret123!',
-            'id_card_number'  => '445566',
-            'father_name'     => 'Julio Torres',
-            'father_phone'    => '88885555',
-            'mother_name'     => 'Laura Torres',
-            'mother_phone'    => '77774444',
-            'parent_address'  => 'Zapote',
-            'class_id'        => $this->class->id,
-            'section_id'      => $this->section->id,
-            'session_id'      => $this->session->id,
-            'board_reg_no'    => 'BRN-010'
+            'first_name' => 'Mario',
+            'last_name' => 'Torres',
+            'email' => 'mario.torres@example.com',
+            'gender' => 'male',
+            'nationality' => 'Costa Rica',
+            'phone' => '65432100',
+            'address' => 'San José',
+            'address2' => 'N/A',
+            'city' => 'San José',
+            'zip' => '20202',
+            'birthday' => '2010-01-01',
+            'religion' => 'None',
+            'blood_type' => 'AB+',
+            'password' => 'Secret123!',
+            'id_card_number' => '445566',
+            'father_name' => 'Julio Torres',
+            'father_phone' => '88885555',
+            'mother_name' => 'Laura Torres',
+            'mother_phone' => '77774444',
+            'parent_address' => 'Zapote',
+            'class_id' => $this->class->id,
+            'section_id' => $this->section->id,
+            'session_id' => $this->session->id,
+            'board_reg_no' => 'BRN-010'
         ];
 
         $response = $this->actingAs($admin)
-                ->post(route('school.student.create'), $payload);
+            ->post(route('school.student.create'), $payload);
 
         $response->assertStatus(302);
 
@@ -401,7 +401,7 @@ class UniTestsDaniel extends TestCase
         // Validar relación en BD
         $this->assertDatabaseHas('student_academic_infos', [
             'student_id' => $student->id,
-            'class_id'   => $this->class->id,
+            'class_id' => $this->class->id,
             'section_id' => $this->section->id,
             'session_id' => $this->session->id,
         ]);
@@ -424,34 +424,34 @@ class UniTestsDaniel extends TestCase
 
         // Crear notas para A
         \App\Models\Mark::create([
-            'student_id'   => $estudianteA->id,
-            'class_id'     => $this->class->id,
-            'section_id'   => $this->section->id,
-            'course_id'    => $this->course->id,
-            'exam_id'      => 1,   // O crea un Exam antes, pero ponemos 1 hardcode si no lo validas
-            'session_id'   => $this->session->id,
-            'marks'        => 95
+            'student_id' => $estudianteA->id,
+            'class_id' => $this->class->id,
+            'section_id' => $this->section->id,
+            'course_id' => $this->course->id,
+            'exam_id' => 1,   // O crea un Exam antes, pero ponemos 1 hardcode si no lo validas
+            'session_id' => $this->session->id,
+            'marks' => 95
         ]);
 
         \App\Models\Mark::create([
-            'student_id'   => $estudianteA->id,
-            'class_id'     => $this->class->id,
-            'section_id'   => $this->section->id,
-            'course_id'    => $this->course->id,
-            'exam_id'      => 1,
-            'session_id'   => $this->session->id,
-            'marks'        => 88
+            'student_id' => $estudianteA->id,
+            'class_id' => $this->class->id,
+            'section_id' => $this->section->id,
+            'course_id' => $this->course->id,
+            'exam_id' => 1,
+            'session_id' => $this->session->id,
+            'marks' => 88
         ]);
-        
+
         //notas estudiante b
         \App\Models\Mark::create([
-            'student_id'   => $estudianteB->id,
-            'class_id'     => $this->class->id,
-            'section_id'   => $this->section->id,
-            'course_id'    => $this->course->id,
-            'exam_id'      => 1,
-            'session_id'   => $this->session->id,
-            'marks'        => 50
+            'student_id' => $estudianteB->id,
+            'class_id' => $this->class->id,
+            'section_id' => $this->section->id,
+            'course_id' => $this->course->id,
+            'exam_id' => 1,
+            'session_id' => $this->session->id,
+            'marks' => 50
         ]);
 
         // Obtener marks desde relación
@@ -483,34 +483,34 @@ class UniTestsDaniel extends TestCase
 
         // Payload igual que el happy path, cambiando solo el email
         $payload = [
-            'first_name'      => 'Hash',
-            'last_name'       => 'Test',
-            'email'           => 'hash.test@example.com',
-            'gender'          => 'male',
-            'nationality'     => 'Costa Rica',
-            'phone'           => '12345678',
-            'address'         => 'San José',
-            'address2'        => 'N/A',
-            'city'            => 'Alajuela',
-            'zip'             => '10101',
-            'birthday'        => '2010-05-10',
-            'religion'        => 'None',
-            'blood_type'      => 'O+',
-            'password'        => $plainPassword,
-            'id_card_number'  => '5555555',
+            'first_name' => 'Hash',
+            'last_name' => 'Test',
+            'email' => 'hash.test@example.com',
+            'gender' => 'male',
+            'nationality' => 'Costa Rica',
+            'phone' => '12345678',
+            'address' => 'San José',
+            'address2' => 'N/A',
+            'city' => 'Alajuela',
+            'zip' => '10101',
+            'birthday' => '2010-05-10',
+            'religion' => 'None',
+            'blood_type' => 'O+',
+            'password' => $plainPassword,
+            'id_card_number' => '5555555',
 
             // Parents
-            'father_name'     => 'Padre Hash',
-            'father_phone'    => '88881111',
-            'mother_name'     => 'Madre Hash',
-            'mother_phone'    => '77776666',
-            'parent_address'  => 'Barrio Hash',
+            'father_name' => 'Padre Hash',
+            'father_phone' => '88881111',
+            'mother_name' => 'Madre Hash',
+            'mother_phone' => '77776666',
+            'parent_address' => 'Barrio Hash',
 
             // Academic related
-            'class_id'        => $this->class->id,
-            'section_id'      => $this->section->id,
-            'session_id'      => $this->session->id,
-            'board_reg_no'    => 'BRN-HASH-01'
+            'class_id' => $this->class->id,
+            'section_id' => $this->section->id,
+            'session_id' => $this->session->id,
+            'board_reg_no' => 'BRN-HASH-01'
         ];
 
         $response = $this->actingAs($admin)->post(
@@ -546,29 +546,29 @@ class UniTestsDaniel extends TestCase
 
         // Payload para crear un profesor
         $payload = [
-            'first_name'      => 'Marco',
-            'last_name'       => 'Jiménez',
-            'email'           => 'marco.jimenez@example.com',
-            'gender'          => 'male',
-            'nationality'     => 'Costa Rica',
-            'phone'           => '88887777',
-            'address'         => 'Cartago',
-            'address2'        => 'N/A',
-            'city'            => 'Cartago',
-            'zip'             => '20201',
-            'birthday'        => '1985-10-10',
-            'religion'        => 'None',
-            'blood_type'      => 'A+',
-            'password'        => 'Secret123!',
-            'id_card_number'  => '555666',
-            'qualification'   => 'Master en Matemáticas',
-            'experience'      => '5 años de docencia',
-            'joining_date'    => '2022-02-01'
+            'first_name' => 'Marco',
+            'last_name' => 'Jiménez',
+            'email' => 'marco.jimenez@example.com',
+            'gender' => 'male',
+            'nationality' => 'Costa Rica',
+            'phone' => '88887777',
+            'address' => 'Cartago',
+            'address2' => 'N/A',
+            'city' => 'Cartago',
+            'zip' => '20201',
+            'birthday' => '1985-10-10',
+            'religion' => 'None',
+            'blood_type' => 'A+',
+            'password' => 'Secret123!',
+            'id_card_number' => '555666',
+            'qualification' => 'Master en Matemáticas',
+            'experience' => '5 años de docencia',
+            'joining_date' => '2022-02-01'
         ];
 
         // Ejecutar creación
         $response = $this->actingAs($admin)
-                ->post(route('school.teacher.create'), $payload);
+            ->post(route('school.teacher.create'), $payload);
 
         $response->assertStatus(302);
 
@@ -596,11 +596,11 @@ class UniTestsDaniel extends TestCase
         $response = $this->actingAs($teacher)->get('/students/add');
 
         // ASSERT: Debe impedir acceso
-        $response->assertStatus(403);  
+        $response->assertStatus(403);
     }
 
     //Prueba 61, Usuario no admin no puede crear profesores
-    
+
     /** @test */
     public function teacher_no_puede_crear_profesor()
     {
@@ -610,25 +610,25 @@ class UniTestsDaniel extends TestCase
 
         // Payload básico válido
         $payload = [
-            'first_name'  => 'Daniel',
-            'last_name'   => 'Valverde',
-            'email'       => 'nuevo.teacher@example.com',
-            'gender'      => 'male',
+            'first_name' => 'Daniel',
+            'last_name' => 'Valverde',
+            'email' => 'nuevo.teacher@example.com',
+            'gender' => 'male',
             'nationality' => 'Costa Rica',
-            'phone'       => '12345678',
-            'address'     => 'San José',
-            'address2'    => 'N/A',
-            'city'        => 'Alajuela',
-            'zip'         => '10101',
-            'birthday'    => '1990-05-05',
-            'religion'    => 'None',
-            'blood_type'  => 'O+',
-            'password'    => 'Secret123!',
+            'phone' => '12345678',
+            'address' => 'San José',
+            'address2' => 'N/A',
+            'city' => 'Alajuela',
+            'zip' => '10101',
+            'birthday' => '1990-05-05',
+            'religion' => 'None',
+            'blood_type' => 'O+',
+            'password' => 'Secret123!',
         ];
 
         // Teacher intenta crear otro profesor
         $response = $this->actingAs($teacher)
-                        ->post(route('school.teacher.create'), $payload);
+            ->post(route('school.teacher.create'), $payload);
 
         // Debe bloquear la acción
         $response->assertStatus(403);
@@ -643,7 +643,7 @@ class UniTestsDaniel extends TestCase
 
         $response = $this->actingAs($admin)->get(route('student.list.show'));
 
-        $response->assertStatus(200); 
+        $response->assertStatus(200);
     }
 
     //Prueba 63, Usuario no admin no puede modificar configuraciones del sistema Complemento de la 43: solo admin modifica settings
@@ -658,7 +658,7 @@ class UniTestsDaniel extends TestCase
         ];
 
         $response = $this->actingAs($teacher)
-                ->post(route('school.final.marks.submission.status.update'), $payload);
+            ->post(route('school.final.marks.submission.status.update'), $payload);
 
         $response->assertStatus(403); // Esperado => no autorizado
     }
@@ -671,7 +671,7 @@ class UniTestsDaniel extends TestCase
         $student->assignRole('student');
 
         $response = $this->actingAs($student)
-                        ->get('/marks/create');
+            ->get('/marks/create');
 
         $response->assertStatus(403);
     }
@@ -689,7 +689,7 @@ class UniTestsDaniel extends TestCase
         // Primera matrícula manual en BD
         \App\Models\StudentAcademicInfo::create([
             'student_id' => $student->id,
-            'class_id'   => $this->class->id,
+            'class_id' => $this->class->id,
             'section_id' => $this->section->id,
             'session_id' => $this->session->id,
             'board_reg_no' => 'REG-001'
@@ -697,32 +697,32 @@ class UniTestsDaniel extends TestCase
 
         // Intento de matrícula duplicada mediante POST simulando formulario
         $payload = [
-            'first_name'      => 'Luis',
-            'last_name'       => 'Ramírez',
-            'email'           => 'dup@example.com', // mismo estudiante
-            'gender'          => 'male',
-            'nationality'     => 'Costa Rica',
-            'phone'           => '88888888',
-            'address'         => 'Santa Ana',
-            'address2'        => 'N/A',
-            'city'            => 'San José',
-            'zip'             => '10202',
-            'birthday'        => '2010-03-10',
-            'religion'        => 'None',
-            'blood_type'      => 'A+',
-            'password'        => 'Secret123!',
-            'id_card_number'  => '555555',
+            'first_name' => 'Luis',
+            'last_name' => 'Ramírez',
+            'email' => 'dup@example.com', // mismo estudiante
+            'gender' => 'male',
+            'nationality' => 'Costa Rica',
+            'phone' => '88888888',
+            'address' => 'Santa Ana',
+            'address2' => 'N/A',
+            'city' => 'San José',
+            'zip' => '10202',
+            'birthday' => '2010-03-10',
+            'religion' => 'None',
+            'blood_type' => 'A+',
+            'password' => 'Secret123!',
+            'id_card_number' => '555555',
 
-            'father_name'     => 'Carlos',
-            'father_phone'    => '88881111',
-            'mother_name'     => 'Ana',
-            'mother_phone'    => '77776666',
-            'parent_address'  => 'Zapote',
+            'father_name' => 'Carlos',
+            'father_phone' => '88881111',
+            'mother_name' => 'Ana',
+            'mother_phone' => '77776666',
+            'parent_address' => 'Zapote',
 
-            'class_id'       => $this->class->id,
-            'section_id'     => $this->section->id,
-            'session_id'     => $this->session->id,
-            'board_reg_no'   => 'REG-002'
+            'class_id' => $this->class->id,
+            'section_id' => $this->section->id,
+            'session_id' => $this->session->id,
+            'board_reg_no' => 'REG-002'
         ];
 
         $response = $this
@@ -734,7 +734,7 @@ class UniTestsDaniel extends TestCase
         $response->assertSessionHasErrors(); // error genérico
     }
 
-    //Prueba 66, 
+    //Prueba 66,
     /** @test */
     public function no_permite_class_o_section_inexistente()
     {
@@ -745,32 +745,32 @@ class UniTestsDaniel extends TestCase
         $idSeccionInexistente = 8888;
 
         $payload = [
-            'first_name'      => 'Marco',
-            'last_name'       => 'Lopez',
-            'email'           => 'marcolo@example.com',
-            'gender'          => 'male',
-            'nationality'     => 'Costa Rica',
-            'phone'           => '12345678',
-            'address'         => 'San José',
-            'address2'        => 'N/A',
-            'city'            => 'Alajuela',
-            'zip'             => '10101',
-            'birthday'        => '2010-05-10',
-            'religion'        => 'None',
-            'blood_type'      => 'O+',
-            'password'        => 'Secret123!',
-            'id_card_number'  => '112233',
+            'first_name' => 'Marco',
+            'last_name' => 'Lopez',
+            'email' => 'marcolo@example.com',
+            'gender' => 'male',
+            'nationality' => 'Costa Rica',
+            'phone' => '12345678',
+            'address' => 'San José',
+            'address2' => 'N/A',
+            'city' => 'Alajuela',
+            'zip' => '10101',
+            'birthday' => '2010-05-10',
+            'religion' => 'None',
+            'blood_type' => 'O+',
+            'password' => 'Secret123!',
+            'id_card_number' => '112233',
 
-            'father_name'     => 'Pedro',
-            'father_phone'    => '88881111',
-            'mother_name'     => 'Ana',
-            'mother_phone'    => '77776666',
-            'parent_address'  => 'Barrio Los Ángeles',
+            'father_name' => 'Pedro',
+            'father_phone' => '88881111',
+            'mother_name' => 'Ana',
+            'mother_phone' => '77776666',
+            'parent_address' => 'Barrio Los Ángeles',
 
-            'class_id'       => $idClaseInexistente,
-            'section_id'     => $idSeccionInexistente,
-            'session_id'     => $this->session->id,
-            'board_reg_no'   => 'REG-777'
+            'class_id' => $idClaseInexistente,
+            'section_id' => $idSeccionInexistente,
+            'session_id' => $this->session->id,
+            'board_reg_no' => 'REG-777'
         ];
 
         $response = $this
@@ -789,11 +789,11 @@ class UniTestsDaniel extends TestCase
         $admin = $this->makeAdmin();
 
         $payload = [
-            'course_name'  => 'Biología',
-            'course_type'  => 'main',
-            'class_id'     => $this->class->id,
-            'semester_id'  => 9999, // Semestre NO existente
-            'session_id'   => $this->session->id,
+            'course_name' => 'Biología',
+            'course_type' => 'main',
+            'class_id' => $this->class->id,
+            'semester_id' => 9999, // Semestre NO existente
+            'session_id' => $this->session->id,
         ];
 
         $response = $this
@@ -848,10 +848,10 @@ class UniTestsDaniel extends TestCase
 
         // Crear sección para esa clase
         $otraSeccion = \App\Models\Section::create([
-            'session_id'     => $this->session->id,
-            'class_id'       => $otraClase->id,
-            'section_name'   => 'Z',
-            'room_no'        => '999'
+            'session_id' => $this->session->id,
+            'class_id' => $otraClase->id,
+            'section_name' => 'Z',
+            'room_no' => '999'
         ]);
 
         // Crear estudiante
@@ -863,7 +863,7 @@ class UniTestsDaniel extends TestCase
         // Registrar Academic Info en la CLASE CORRECTA (la tuya original, $this->class)
         \App\Models\StudentAcademicInfo::create([
             'student_id' => $estudiante->id,
-            'class_id'   => $this->class->id,
+            'class_id' => $this->class->id,
             'section_id' => $this->section->id,
             'session_id' => $this->session->id,
             'board_reg_no' => 'BRN-X1'
@@ -872,12 +872,12 @@ class UniTestsDaniel extends TestCase
         // Payload intentando marcar asistencia en la OTRA clase distinta
         $payload = [
             'student_id' => $estudiante->id,
-            'class_id'   => $otraClase->id,
+            'class_id' => $otraClase->id,
             'section_id' => $otraSeccion->id,
             'attendance_date' => now()->format('Y-m-d'),
-            'status'     => 'present',
+            'status' => 'present',
             'session_id' => $this->session->id,
-            'course_id'  => $this->course->id // si attendance lo exige
+            'course_id' => $this->course->id // si attendance lo exige
         ];
 
         // Act — almacenar asistencia
@@ -905,7 +905,7 @@ class UniTestsDaniel extends TestCase
         // Academic info correcto
         \App\Models\StudentAcademicInfo::create([
             'student_id' => $estudiante->id,
-            'class_id'   => $this->class->id,
+            'class_id' => $this->class->id,
             'section_id' => $this->section->id,
             'session_id' => $this->session->id,
             'board_reg_no' => 'BRN-55'
@@ -916,12 +916,12 @@ class UniTestsDaniel extends TestCase
 
         $payload = [
             'student_id' => $estudiante->id,
-            'class_id'   => $this->class->id,
+            'class_id' => $this->class->id,
             'section_id' => $this->section->id,
             'attendance_date' => $fechaFuera,
-            'status'     => 'present',
+            'status' => 'present',
             'session_id' => $this->session->id,
-            'course_id'  => $this->course->id,
+            'course_id' => $this->course->id,
         ];
 
         // ACT — registrar asistencia fuera de rango
@@ -934,8 +934,8 @@ class UniTestsDaniel extends TestCase
         $response->assertSessionHasErrors(['attendance_date']);
     }
 
-    //Prueba 71, Nota para estudiante inscrito en la materia No permite guardar nota para estudiante que 
-    // no está matriculado en el curso/materia correspondiente 
+    //Prueba 71, Nota para estudiante inscrito en la materia No permite guardar nota para estudiante que
+    // no está matriculado en el curso/materia correspondiente
 
     /** @test */
     public function no_permite_registrar_nota_para_estudiante_no_inscrito_en_el_curso()
@@ -950,7 +950,7 @@ class UniTestsDaniel extends TestCase
 
         \App\Models\StudentAcademicInfo::create([
             'student_id' => $estudianteInscrito->id,
-            'class_id'   => $this->class->id,
+            'class_id' => $this->class->id,
             'section_id' => $this->section->id,
             'session_id' => $this->session->id,
             'board_reg_no' => 'BRN-555'
@@ -962,12 +962,12 @@ class UniTestsDaniel extends TestCase
 
         // Payload para guardar nota
         $payload = [
-            'student_id'     => $estudianteNoInscrito->id, //No inscrito
-            'course_id'      => $this->course->id,
-            'class_id'       => $this->class->id,
-            'section_id'     => $this->section->id,
-            'session_id'     => $this->session->id,
-            'mark_obtained'  => 90,
+            'student_id' => $estudianteNoInscrito->id, //No inscrito
+            'course_id' => $this->course->id,
+            'class_id' => $this->class->id,
+            'section_id' => $this->section->id,
+            'session_id' => $this->session->id,
+            'mark_obtained' => 90,
         ];
 
         $response = $this
@@ -1000,8 +1000,8 @@ class UniTestsDaniel extends TestCase
         // Asignar curso al teacherOwner
         \App\Models\AssignedTeacher::create([
             'teacher_id' => $teacherOwner->id,
-            'course_id'  => $this->course->id,
-            'class_id'   => $this->class->id,
+            'course_id' => $this->course->id,
+            'class_id' => $this->class->id,
             'section_id' => $this->section->id,
             'session_id' => $this->session->id,
         ]);
@@ -1012,7 +1012,7 @@ class UniTestsDaniel extends TestCase
 
         \App\Models\StudentAcademicInfo::create([
             'student_id' => $student->id,
-            'class_id'   => $this->class->id,
+            'class_id' => $this->class->id,
             'section_id' => $this->section->id,
             'session_id' => $this->session->id,
             'board_reg_no' => 'BRX-55'
@@ -1020,12 +1020,12 @@ class UniTestsDaniel extends TestCase
 
         // Nota registrada previamente
         $nota = \App\Models\Mark::create([
-            'student_id'     => $student->id,
-            'course_id'      => $this->course->id,
-            'class_id'       => $this->class->id,
-            'section_id'     => $this->section->id,
-            'session_id'     => $this->session->id,
-            'mark_obtained'  => 75
+            'student_id' => $student->id,
+            'course_id' => $this->course->id,
+            'class_id' => $this->class->id,
+            'section_id' => $this->section->id,
+            'session_id' => $this->session->id,
+            'mark_obtained' => 75
         ]);
 
         // Payload de edición
@@ -1038,8 +1038,8 @@ class UniTestsDaniel extends TestCase
             ->actingAs($teacherIntruder)
             ->post(route('course.final.mark.submit.store'), array_merge($payload, [
                 'student_id' => $student->id,
-                'course_id'  => $this->course->id,
-                'class_id'   => $this->class->id,
+                'course_id' => $this->course->id,
+                'class_id' => $this->class->id,
                 'section_id' => $this->section->id,
                 'session_id' => $this->session->id,
             ]));
@@ -1066,9 +1066,9 @@ class UniTestsDaniel extends TestCase
 
         // Primer uso → válido
         $response1 = $this->post('/reset-password', [
-            'email'                 => $user->email,
-            'token'                 => $token,
-            'password'              => 'NewSecurePass#1',
+            'email' => $user->email,
+            'token' => $token,
+            'password' => 'NewSecurePass#1',
             'password_confirmation' => 'NewSecurePass#1',
         ]);
 
@@ -1077,9 +1077,9 @@ class UniTestsDaniel extends TestCase
 
         // Segundo uso con el MISMO token → debería FALLAR
         $response2 = $this->post('/reset-password', [
-            'email'                 => $user->email,
-            'token'                 => $token,
-            'password'              => 'AnotherPass22?',
+            'email' => $user->email,
+            'token' => $token,
+            'password' => 'AnotherPass22?',
             'password_confirmation' => 'AnotherPass22?',
         ]);
 
@@ -1102,10 +1102,10 @@ class UniTestsDaniel extends TestCase
 
         $payload = [
             'course_name' => 'Matemáticas II',
-            'class_id'    => $this->class->id,
+            'class_id' => $this->class->id,
             'semester_id' => $this->semester->id,
             'course_type' => 'main',
-            'session_id'  => $this->session->id,
+            'session_id' => $this->session->id,
         ];
 
         // ADMIN DEBE PODER CREARLO
@@ -1129,7 +1129,7 @@ class UniTestsDaniel extends TestCase
         );
     }
 
-    
+
 
     //Prueba 75, Estudiante no puede acceder al módulo de asistencia
     /** @test */

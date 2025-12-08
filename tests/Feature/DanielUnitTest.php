@@ -233,7 +233,7 @@ class DanielUnitTest extends TestCase
             'address2' => 'N/A',
             'city' => 'Alajuela',
             'zip' => '10101',
-            'birthday' => now()->subYears(2)->format('Y-m-d'), // 🙋 SOLO 2 años
+            'birthday' => now()->subYears(2)->format('Y-m-d'), //  SOLO 2 años
             'religion' => 'None',
             'blood_type' => 'O+',
             'password' => 'Secret123!',
@@ -328,7 +328,7 @@ class DanielUnitTest extends TestCase
             'zip' => '10101',
             'birthday' => '2010-05-10',
             'religion' => 'None',
-            'blood_type' => 'Tornillo-14mm', // ❌ valor inválido
+            'blood_type' => 'Tornillo-14mm', //  valor inválido
             'password' => 'Secret123!',
             'id_card_number' => '1234567',
             'father_name' => 'Oscar',
